@@ -1,5 +1,5 @@
-#include <cstdint>
+#pragma once
+#include "category_levels.h"
 
-enum class InstructionCategory;
-InstructionCategory DecodeCategory(uint32_t instruction);
+InstructionCategory0 DecodeGlobalCategory0(uint32_t instruction);
 void Disassembly();

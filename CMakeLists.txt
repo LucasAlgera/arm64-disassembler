@@ -15,4 +15,5 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 add_executable(arm64-disasm 
     src/main.cpp
     src/disassembler.cpp
-    include/disassembler.h)
+    include/disassembler.h
+    include/category_levels.h)
