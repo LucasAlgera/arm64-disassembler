@@ -27,6 +27,23 @@ InstructionCategory0 DecodeGlobalCategory0(uint32_t instruction)
     return InstructionCategory0::UNKNOWN;
 }
 
+DATA_PROC_IMM_Category1 DecodeDATA_PROC_IMM_Category1(uint32_t instruction)
+{
+    uint8_t op0 = (instruction >> 29) & 0x03; // bits[30:29]
+    uint8_t op1 = (instruction >> 22) & 0x0F; // bits[25::22]
+
+    for (const auto& pattern : DATA_PROC_IMM_patterns) {
+        bool op0Match = (pattern.op0m == 0b0) || ((op0 & pattern.op0m) == pattern.op0);
+        bool op1Match = (op1 & pattern.op1m) == pattern.op1;
+
+        if (op0Match && op1Match) {
+            return pattern.category;
+        }
+    }
+
+    return DATA_PROC_IMM_Category1::UNKNOWN;
+}
+
 
 
 void Disassembly()
@@ -34,5 +51,10 @@ void Disassembly()
     uint32_t inst0 = 0x8B020020;  // ADD X0, X1, X2
     if (DecodeGlobalCategory0(inst0) == InstructionCategory0::DATA_PROC_REG) {
         std::cout << "Data Processing - Register" << std::endl;
+    }
+
+    uint32_t inst1 = 0x91001420;  // ADD X0, X1, #5
+    if (DecodeDATA_PROC_IMM_Category1(inst1) == DATA_PROC_IMM_Category1::ADD_SUB_IMM) {
+        std::cout << "✓ Add/subtract immediate" << std::endl;
     }
 }
