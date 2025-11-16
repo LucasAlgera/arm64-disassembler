@@ -10,10 +10,15 @@ else()
     add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
 add_executable(arm64-disasm 
     src/main.cpp
     src/disassembler.cpp
     include/disassembler.h
+    src/elf_parser.cpp
+    include/elf_parser.h
     include/category_levels.h)
+
+target_include_directories(arm64-disasm PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/external
+)
