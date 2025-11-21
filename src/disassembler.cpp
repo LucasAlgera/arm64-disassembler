@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <utility>
+#include <sstream>
 
 // Last number behind the functions signify the level that category lives inside of the arm64 encoding tree.
 
@@ -44,6 +45,45 @@ DATA_PROC_IMM_Category1 DecodeDATA_PROC_IMM_Category1(uint32_t instruction)
     return DATA_PROC_IMM_Category1::UNKNOWN;
 }
 
+constexpr uint8_t Bits(uint32_t value, int hi, int lo) {
+    return (value >> lo) & ((1u << (hi - lo + 1)) - 1);
+}
+std::string DecodeADD_SUB_IMM_Category2(uint32_t instruction)
+{
+    uint8_t sf = (instruction >> 31) & 1;       // 64/32 bit
+    uint8_t op = (instruction >> 30) & 1;       // ADD,SUB
+    uint8_t S = (instruction >> 29) & 1;        // flags?
+    uint8_t sh = (instruction >> 22) & 1;       // shift?
+    uint8_t imm12 = Bits(instruction, 21, 10);  // immediate
+    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+
+    std::string dI;
+
+    if (!op)
+        dI = (S ? "ADDS " : "ADD ");
+    else
+        dI = (S ? "SUBS " : "SUB ");
+
+    dI += sf ? "X" : "W";
+    dI += std::to_string(Rd);
+    dI += ", ";
+
+    dI += sf ? "X" : "W";
+    dI += std::to_string(Rn);
+    dI += ", #";
+
+    uint32_t imm = imm12;
+    if (sh)
+        imm <<= 12;
+    if (imm >= 10)
+        dI += "value too high, convert to hex";
+    else
+        dI += std::to_string(imm12);
+    
+    return dI;
+}
+
 
 
 void Disassembly()
@@ -53,8 +93,10 @@ void Disassembly()
         std::cout << "Data Processing - Register" << std::endl;
     }
 
-    uint32_t inst1 = 0x91001420;  // ADD X0, X1, #5
+    uint32_t inst1 = 0x911F4020;  // ADD X0, X1, #5
+
     if (DecodeDATA_PROC_IMM_Category1(inst1) == DATA_PROC_IMM_Category1::ADD_SUB_IMM) {
-        std::cout << "✓ Add/subtract immediate" << std::endl;
+        std::cout << "Add/subtract immediate" << std::endl;
     }
+    std::cout << DecodeADD_SUB_IMM_Category2(inst1);
 }
