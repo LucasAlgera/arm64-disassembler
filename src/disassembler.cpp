@@ -51,6 +51,31 @@ constexpr uint32_t Bits(uint32_t value, int hi, int lo = -1)
     return (value >> lo) & ((1u << (hi - lo + 1)) - 1);
 }
 
+
+std::string DecodePC_REL_Category2(uint32_t instruction)
+{
+    uint8_t op = (instruction >> 31) & 1;       // ADR,ADRP
+    uint8_t immlo = Bits(instruction, 30, 29);  // flags?
+    uint32_t immhi = Bits(instruction, 23, 5);  // flags?
+    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+
+    std::string dI;
+
+    dI = (op ? "ADRP " : "ADR ");
+
+    dI += "X";
+    dI += std::to_string(Rd);
+    dI += ", SignExtend(";
+    dI += std::to_string(immhi);
+    dI += ":";
+    dI += std::to_string(immlo);
+    dI += ", 64)";
+
+    return dI;
+}
+
+
+
 std::string DecodeADD_SUB_IMM_Category2(uint32_t instruction)
 {
     uint8_t sf = (instruction >> 31) & 1;       // 64/32 bit
@@ -145,6 +170,122 @@ std::string DecodeMIN_MAX_Category2(uint32_t instruction)
     return dI;
 }
 
+std::string DecodeLOGICAL_IMM_Category2(uint32_t instruction)
+{
+    uint8_t sf = (instruction >> 31) & 1;       // 64/32 bit
+    uint8_t opc = Bits(instruction, 30, 29);    // instruction type
+    uint8_t N = (instruction >> 22) & 1;        // flags?
+    uint8_t immr = Bits(instruction, 21, 16);    //immediate
+    uint8_t imms = Bits(instruction, 15, 10);    // immediate
+    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+
+    std::string dI;
+
+    switch (opc)
+    {
+        case 0b00: dI = "AND "; break;
+        case 0b01: dI = "ORR "; break;
+        case 0b10: dI = "EOR "; break;
+        case 0b11: dI = "ANDS "; break;
+        default:    dI = "UNDEFINED "; break;
+    }
+
+    dI += sf ? "X" : "W";
+    dI += std::to_string(Rd);
+    dI += ", ";
+
+    dI += sf ? "X" : "W";
+    dI += std::to_string(Rn);
+    dI += ", #";
+
+    dI += "dc(" + std::to_string(N) + ", ";
+    dI += std::to_string(imms);
+    dI += ", ";
+    dI += std::to_string(immr);
+    dI += ", TRUE, size()";
+
+    return dI;
+}
+
+
+std::string DecodeMOVE_WIDE_IMM_Category2(uint32_t instruction)
+{
+    uint8_t sf = (instruction >> 31) & 1;       // 64/32 bit
+    uint8_t opc = Bits(instruction, 30, 29);    // instruction type
+    uint8_t hw = Bits(instruction, 22, 21);     // shift
+    uint16_t imm16 = Bits(instruction, 20, 5);  // immediate
+    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+
+    std::string dI;
+
+    switch (opc)
+    {
+        case 0b00: dI = "MOVN "; break;
+        case 0b10: dI = "MOVZ "; break;
+        case 0b11: dI = "MOVK "; break;
+        default:    dI = "UNDEFINED "; break;
+    }
+
+    dI += sf ? "X" : "W";
+    dI += std::to_string(Rd);
+    dI += ", #";
+    dI += std::to_string(imm16);
+    dI += ", ";
+
+    dI += "LSL#";
+    dI += std::to_string(hw*16); // shift by 0/16 (if 64bit also 32 or 48)
+    return dI;
+}
+std::string DecodeBITFIELD_Category2(uint32_t instruction)
+{
+    uint8_t sf = (instruction >> 31) & 1;       // 64/32 bit
+    uint8_t opc = Bits(instruction, 30, 29);    // instruction type
+    uint8_t N = (instruction >> 22) & 1;        //
+    uint16_t immr = Bits(instruction, 21, 16);  // immediate
+    uint16_t imms = Bits(instruction, 15, 10);  // immediate
+    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+
+    std::string dI;
+
+    switch (opc)
+    {
+        case 0b00: dI = "SBFM "; break;
+        case 0b01: dI = "BFM "; break;
+        case 0b10: dI = "UBFM "; break;
+        default:    dI = "UNDEFINED "; break;
+    }
+    dI += sf ? "X" : "W";
+    dI += std::to_string(Rd);
+    dI += ", ";
+
+    dI += sf ? "X" : "W";
+    dI += std::to_string(Rn);
+    dI += ", #";
+
+    dI += std::to_string(immr);
+    dI += ", #";
+    dI += std::to_string(imms);
+
+    return dI;
+}
+
+std::string DecodeEXTRACT_Category2(uint32_t instruction)
+{
+    uint8_t sf = (instruction >> 31) & 1;       // 64/32 bit
+    uint8_t opc = Bits(instruction, 30, 29);    // instruction type
+    uint8_t N = (instruction >> 22) & 1;        //
+    uint16_t immr = Bits(instruction, 21, 16);  // immediate
+    uint16_t imms = Bits(instruction, 15, 10);  // immediate
+    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+
+    std::string dI = "EXTRACT";
+
+    return dI;
+}
+
 void Disassembly()
 {
     uint32_t inst0 = 0x8B020020;  // ADD X0, X1, X2
@@ -156,7 +297,7 @@ void Disassembly()
     if (DecodeDATA_PROC_IMM_Category1(inst1) == DATA_PROC_IMM_Category1::ADD_SUB_IMM) {
         std::cout << "Add/subtract immediate" << std::endl;
     }
-    std::cout << DecodeADD_SUB_IMM_Category2(inst1);
+    std::cout << DecodePC_REL_Category2(0x10FFFFFE);
 }
 
 
@@ -164,13 +305,13 @@ void Disassembly()
 
 // DATA PROC IMM
 // TODO: 
-// PC-REL
-// LOGICAL
-// MOVE WIDE
-// BITFIELD
 // EXTRACT
 
 // DONE: 
+// PC-REL
 // ADD/SUB
 // ADD/SUB (TAG)
 // MIN/MAX
+// LOGICAL
+// MOVE WIDE
+// BITFIELD
