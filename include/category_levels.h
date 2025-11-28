@@ -87,3 +87,62 @@ static const DATA_PROC_IMM_Pattern1 DATA_PROC_IMM_patterns[] =
     {DATA_PROC_IMM_Category1::DATA_PROC,        0b11, 0b11, 0b1110, 0b1110}, // op0: 11, op1: 111x
     {DATA_PROC_IMM_Category1::EXTRACT,          0b0,  0b11, 0b1110, 0b1110}  // op0: !=11, op1: 111x
 };
+
+
+
+//--------------------------------------
+//--LOAD_STORES-------------------------
+//--------------------------------------
+
+// Only the 9 most important categories 
+enum class LOAD_STORES_Category1
+{
+    //COMPARE_SWAP,
+    //AVD_SIMD_MSTRUCT,
+    //AVD_SIMD_MSTRUCT_PIDX,
+    //AVD_SIMD_SSTRUCT,
+    //AVD_SIMD_SSTRUCT_PIDX,
+    //RWC_CMP_SWAP,
+    //RWC_CMP_SWAP_PAIR,
+    //B128_ATM_MEM,
+    //GCS_LOAD_STORE,
+    //LOAD_STORE_MEM_TAG, 
+    //LOAD_STORE_EXC_PAIR, 
+    //LOAD_STORE_EXC_REG, 
+    //LOAD_STORE_ORDER, 
+    //COMP_SWAP, 
+    //LDIAPP_STILP, 
+    //LDIAPR_STILP,
+    LOAD_REG,                               // 2
+    //MEMCP_MEMSET,                        
+    //LOAD_STORE_NOALLOC_PAIR,             
+    LOAD_STORE_REG_PAIR_PIDX,           // 1
+    LOAD_STORE_REG_PAIR_OFFS,           // 1
+    LOAD_STORE_REG_PAIR_PRIDX,          // 1
+    LOAD_STORE_REG_UNSC_IMM,                // 2
+    LOAD_STORE_REG_IMM_PIDX,                // 2
+    //LOAD_STORE_REG_UNPR,                 
+    LOAD_STORE_REG_IMM_PRIDX,               // 2
+    //ATM_MEM_OPERATION,                   
+    LOAD_STORE_REG_OFFS,                        // 3
+    //LOAD_STORE_REG_PAC,                  
+    LOAD_STORE_REG_UIMM,                // 1
+    UNKNOWN
+};
+
+struct LOAD_STORES_Pattern1
+{
+    LOAD_STORES_Category1 category;
+    uint8_t op0;
+    uint8_t op0m;  // mask
+    uint8_t op1;   
+    uint8_t op1m;  // mask
+    uint16_t op2;  
+    uint16_t op2m; // maks
+};
+
+static const LOAD_STORES_Pattern1 LOAD_STORES_patterns[] =
+{
+                                                    // op0     op0m    op1  op1m        op2                 op2m
+    {LOAD_STORES_Category1::LOAD_STORE_REG_UIMM,     0b0001,  0b0011,  0b0, 0b0,   0b000000000000000, 0b100000000000000}, // op1: 00xx
+};
