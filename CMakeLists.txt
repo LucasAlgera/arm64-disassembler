@@ -5,20 +5,26 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
-    add_compile_options(/W4)
+	add_compile_options(/W4)
 else()
-    add_compile_options(-Wall -Wextra -pedantic)
+	add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
 add_executable(arm64-disasm 
-    src/main.cpp
-    src/disassembler.cpp
-    include/disassembler.h
-    src/elf_parser.cpp
-    include/elf_parser.h
-    include/category_levels.h)
+	src/main.cpp
+	src/disassembler.cpp
+	include/disassembler.h
+  	src/elf_parser.cpp
+  	include/elf_parser.h
+   	include/category_levels.h
+   	include/decode_util.h
+	src/classify.cpp
+	include/classify.h
+	src/decoders/decode_data_proc_imm.cpp
+	include/decoders/decode_data_proc_imm.h
+	)
 
 target_include_directories(arm64-disasm PRIVATE
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/external
+	${PROJECT_SOURCE_DIR}/include
+	${PROJECT_SOURCE_DIR}/external
 )
