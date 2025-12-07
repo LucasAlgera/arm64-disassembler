@@ -143,6 +143,9 @@ struct LOAD_STORES_Pattern1
 
 static const LOAD_STORES_Pattern1 LOAD_STORES_patterns[] =
 {
-                                                    // op0     op0m    op1  op1m        op2                 op2m
-    {LOAD_STORES_Category1::LOAD_STORE_REG_UIMM,     0b0001,  0b0011,  0b0, 0b0,   0b000000000000000, 0b100000000000000}, // op1: 00xx
+                                                        // op0     op0m    op1  op1m        op2                 op2m
+    {LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PIDX,    0b0010,  0b0011,  0b0, 0b0,   0b010000000000000, 0b110000000000000},
+    {LOAD_STORES_Category1::LOAD_STORE_REG_UIMM,         0b0011,  0b0011,  0b0, 0b0,   0b100000000000000, 0b100000000000000},
+    {LOAD_STORES_Category1::LOAD_STORE_REG_IMM_PRIDX,    0b0011,  0b0011,  0b0, 0b0,   0b000000000000011, 0b100100000000011},
+    {LOAD_STORES_Category1::LOAD_STORE_REG_IMM_PIDX,     0b0011,  0b0011,  0b0, 0b0,   0b000000000000001, 0b100100000000011},
 };

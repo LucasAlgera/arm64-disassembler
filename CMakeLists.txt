@@ -22,6 +22,8 @@ add_executable(arm64-disasm
 	include/classify.h
 	src/decoders/decode_data_proc_imm.cpp
 	include/decoders/decode_data_proc_imm.h
+	src/decoders/decode_load_stores.cpp
+	include/decoders/decode_load_stores.h
 	)
 
 target_include_directories(arm64-disasm PRIVATE
