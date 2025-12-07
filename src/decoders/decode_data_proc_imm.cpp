@@ -12,8 +12,7 @@ std::string DecodePC_REL_Category2(uint32_t instruction)
 
     dI = (op ? "ADRP " : "ADR ");
 
-    dI += "X";
-    dI += std::to_string(Rd);
+    dI += GetRegName(Rd, true);
     dI += ", SignExtend(";
     dI += std::to_string(immhi);
     dI += ":";
@@ -42,12 +41,10 @@ std::string DecodeADD_SUB_IMM_Category2(uint32_t instruction)
     else
         dI = (S ? "SUBS " : "SUB ");
 
-    dI += sf ? "X" : "W";
-    dI += std::to_string(Rd);
+    dI += GetRegName(Rd, sf);
     dI += ", ";
 
-    dI += sf ? "X" : "W";
-    dI += std::to_string(Rn);
+    dI += GetRegName(Rn, sf);
     dI += ", #";
 
     int imm = sh ? (imm12 << 12) : imm12;
@@ -70,12 +67,10 @@ std::string DecodeADD_SUB_IMM_TAG_Category2(uint32_t instruction)
 
     dI = (op ? "SUBG " : "ADDG ");
 
-    dI += "X";
-    dI += std::to_string(Rd);
+    dI += GetRegName(Rd, true);
     dI += ", ";
 
-    dI += "X";
-    dI += std::to_string(Rn);
+    dI += GetRegName(Rn, true);
     dI += ", #";
 
     dI += std::to_string(imm6 * 16);
@@ -106,12 +101,10 @@ std::string DecodeMIN_MAX_Category2(uint32_t instruction)
     default:    dI = "UNDEFINED "; break;
     }
 
-    dI += sf ? "X" : "W";
-    dI += std::to_string(Rd);
+    dI += GetRegName(Rd, sf);
     dI += ", ";
 
-    dI += sf ? "X" : "W";
-    dI += std::to_string(Rn);
+    dI += GetRegName(Rn, sf);
     dI += ", #";
 
     dI += std::to_string(imm8);
@@ -140,12 +133,10 @@ std::string DecodeLOGICAL_IMM_Category2(uint32_t instruction)
     default:    dI = "UNDEFINED "; break;
     }
 
-    dI += sf ? "X" : "W";
-    dI += std::to_string(Rd);
+    dI += GetRegName(Rd, sf);
     dI += ", ";
 
-    dI += sf ? "X" : "W";
-    dI += std::to_string(Rn);
+    dI += GetRegName(Rn, sf);
     dI += ", #";
 
     dI += "decodeBitMasks(" + std::to_string(N) + ", ";
@@ -176,8 +167,8 @@ std::string DecodeMOVE_WIDE_IMM_Category2(uint32_t instruction)
     default:    dI = "UNDEFINED "; break;
     }
 
-    dI += sf ? "X" : "W";
-    dI += std::to_string(Rd);
+    dI += GetRegName(Rd, sf);
+
     dI += ", #";
     dI += std::to_string(imm16);
     dI += ", ";
@@ -205,12 +196,11 @@ std::string DecodeBITFIELD_Category2(uint32_t instruction)
     case 0b10: dI = "UBFM "; break;
     default:    dI = "UNDEFINED "; break;
     }
-    dI += sf ? "X" : "W";
-    dI += std::to_string(Rd);
+
+    dI += GetRegName(Rd, sf);
     dI += ", ";
 
-    dI += sf ? "X" : "W";
-    dI += std::to_string(Rn);
+    dI += GetRegName(Rn, sf);
     dI += ", #";
 
     dI += std::to_string(immr);

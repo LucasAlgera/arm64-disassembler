@@ -27,12 +27,15 @@ InstructionCategory0 DecodeGlobalCategory0(uint32_t instruction)
             {
             case InstructionCategory0::LOAD_STORE: DecodeLOAD_STORES_Category1(instruction); break; return InstructionCategory0::UNKNOWN;
             case InstructionCategory0::DATA_PROC_IMM: DecodeDATA_PROC_IMM_Category1(instruction); break; return InstructionCategory0::UNKNOWN;
-            default: InstructionCategory0::UNKNOWN; std::cout << "-----" << std::endl; break;
+            default: InstructionCategory0::UNKNOWN;     std::stringstream ss;
+                ss << "0x" << std::hex << std::uppercase << instruction;
+
+                std::cout << std::left << std::setw(15) << ss.str()
+                    << std::setw(8) << ">>>" << std::endl;
+                return InstructionCategory0::UNKNOWN; break;
             }
         }
     }
-
-    return InstructionCategory0::UNKNOWN;
 }
 
 void DecodeDATA_PROC_IMM_Category1(uint32_t instruction)
@@ -92,7 +95,9 @@ void DecodeLOAD_STORES_Category1(uint32_t instruction)
             case LS::LOAD_STORE_REG_UIMM:       dI = DecodeLOAD_STORE_REG_IMM_Category2(instruction, LS::LOAD_STORE_REG_UIMM);          break; return;
             case LS::LOAD_STORE_REG_IMM_PRIDX:  dI = DecodeLOAD_STORE_REG_IMM_Category2(instruction, LS::LOAD_STORE_REG_IMM_PRIDX);     break; return;
             case LS::LOAD_STORE_REG_IMM_PIDX:   dI = DecodeLOAD_STORE_REG_IMM_Category2(instruction, LS::LOAD_STORE_REG_IMM_PIDX);      break; return;
-            case LS::LOAD_STORE_REG_PAIR_PIDX:  dI = DecodeLOAD_STORE_REG_PAIR_PIDX_Category2(instruction);                             break; return;
+            case LS::LOAD_STORE_REG_PAIR_PIDX:  dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_PIDX);    break; return;
+            case LS::LOAD_STORE_REG_PAIR_OFFS:  dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_OFFS);    break; return;
+            case LS::LOAD_STORE_REG_PAIR_PRIDX:  dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_PRIDX);    break; return;
             default: LS::UNKNOWN; dI = "UNKNOWN"; break;
 
             }

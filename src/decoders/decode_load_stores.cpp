@@ -59,33 +59,33 @@ std::string DecodeLOAD_STORE_REG_IMM_Category2(uint32_t instruction, LOAD_STORES
     if (dI == "PRFM")
         return "PRFM " + std::to_string(imm12) + ", [X" + std::to_string(Rn) + "]";
 
-    std::string reg_type{};
+    bool reg_type{};
     if (size == 0b11 || dI == "LDRSW" || (dI.substr(0, 5) == "LDRS" && opc == 0b10))
-        reg_type = "X";
+        reg_type = true;
     else
-        reg_type = "W";
+        reg_type = false;
 
     uint32_t offset = imm12 << size; // ARM rule: offset = imm12 << size
 
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_IMM_PIDX)
-        return dI + reg_type + std::to_string(Rt) +
-        ", [X" + std::to_string(Rn) + "]" +
+        return dI + GetRegName(Rt, reg_type) +
+        ", [" + GetRegName(Rn, true) + "]" +
         ", #" + std::to_string(offset);
 
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_IMM_PRIDX)
-        return dI + reg_type + std::to_string(Rt) +
-        ", [X" + std::to_string(Rn) +
+        return dI + GetRegName(Rt, reg_type) +
+        ", [" + GetRegName(Rn, true) +
         ", #" + std::to_string(offset) + "]!";
 
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_UIMM)
-        return dI + reg_type + std::to_string(Rt) +
-        ", [X" + std::to_string(Rn) +
+        return dI + GetRegName(Rt, reg_type) +
+        ", [" + GetRegName(Rn, true) +
         ", #" + std::to_string(offset) + "]";
 
     return dI;
 }
 
-std::string DecodeLOAD_STORE_REG_PAIR_PIDX_Category2(uint32_t instruction)
+std::string DecodeLOAD_STORE_REG_PAIR_Category2(uint32_t instruction, LOAD_STORES_Category1 cat)
 {
     uint8_t opc = Bits(instruction, 31, 30);
     uint8_t V = Bits(instruction, 26);
@@ -95,18 +95,18 @@ std::string DecodeLOAD_STORE_REG_PAIR_PIDX_Category2(uint32_t instruction)
 
     static const std::unordered_map<uint16_t, std::string> table =
     {
-        {0b00'0'0, "STP"},      //32-bit
-        {0b00'0'1, "LDP"},      //32-bit
-        {0b00'1'0, "STP"},      //32-bit (SIMD&FP)
-        {0b00'1'1, "LDP"},      //32-bit (SIMD&FP)
-        {0b01'0'0, "STGP"},
-        {0b01'0'1, "LDPSW"},
-        {0b01'1'0, "STP"},      //64-bit (SIMD&FP)
-        {0b01'1'1, "LDP"},      //64-bit (SIMD&FP)
-        {0b10'0'0, "STP"},      //64-bit
-        {0b10'0'1, "LDP"},      //64-bit
-        {0b10'1'0, "STP"},      //128-bit (SIMD&FP)
-        {0b10'1'1, "LDP"},      //128-bit (SIMD&FP)
+        {0b00'0'0, "STP "},      //32-bit
+        {0b00'0'1, "LDP "},      //32-bit
+        {0b00'1'0, "STP "},      //32-bit (SIMD&FP)
+        {0b00'1'1, "LDP "},      //32-bit (SIMD&FP)
+        {0b01'0'0, "STGP "},
+        {0b01'0'1, "LDPSW "},
+        {0b01'1'0, "STP "},      //64-bit (SIMD&FP)
+        {0b01'1'1, "LDP "},      //64-bit (SIMD&FP)
+        {0b10'0'0, "STP "},      //64-bit
+        {0b10'0'1, "LDP "},      //64-bit
+        {0b10'1'0, "STP "},      //128-bit (SIMD&FP)
+        {0b10'1'1, "LDP "},      //128-bit (SIMD&FP)
 
     };
 
@@ -121,11 +121,31 @@ std::string DecodeLOAD_STORE_REG_PAIR_PIDX_Category2(uint32_t instruction)
 
     std::string dI = it->second;
 
-    dI += opc ? "X" : "W";
-    std::to_string(Rt);
-    dI += opc ? ",X" : ",W";
-    std::to_string(Rn);
+    bool reg_type{};
+    reg_type = opc ? 1 : 0;
 
+    if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PIDX)
+    {
+        uint32_t offset = opc ? imm7 * 8: imm7 * 4;
+        
+        return dI + GetRegName(Rt, reg_type) + "," + GetRegName(Rt2, reg_type) +
+        ", [" + GetRegName(Rn, true) + "]" +
+            ", #" + "offset";
+    }
+    if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PRIDX)
+    {
+        uint32_t offset = opc ? imm7 * 8 : imm7 * 4;
 
-    return std::string("LOAD_STORE_REG_PAIR_PIDX!! \n");
+        return dI + GetRegName(Rt, reg_type) + "," + GetRegName(Rt2, reg_type) +
+            ", [" + GetRegName(Rn, true) +
+            ", #-" + "offset" + +"]!";
+    }
+    if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_OFFS)
+    {
+        uint32_t offset = opc ? imm7 * 8 : imm7 * 4;
+
+        return dI + GetRegName(Rt, reg_type) + "," + GetRegName(Rt2, reg_type) +
+            ", [" + GetRegName(Rn, true) +
+            ", #" + "offset" + "]";
+    }
 }
