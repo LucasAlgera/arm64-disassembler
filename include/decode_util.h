@@ -1,5 +1,6 @@
 #pragma once
 #include <utility>
+#include <string>
 
 constexpr uint32_t Bits(uint32_t value, int hi, int lo = -1)
 {
@@ -31,4 +32,13 @@ static uint32_t EndianSwapper(uint32_t value)
         right_middle_byte | rightmost_byte);
 
     return result;
+}
+static std::string GetRegName(uint8_t registry, bool width)
+{
+    if (registry == 31)
+        return "sp";
+    if(width)
+        return std::string("x") + std::to_string(registry);
+
+    return std::string("w") + std::to_string(registry);
 }

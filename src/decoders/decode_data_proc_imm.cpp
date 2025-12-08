@@ -4,13 +4,13 @@
 std::string DecodePC_REL_Category2(uint32_t instruction)
 {
     uint8_t op = (instruction >> 31) & 1;       // ADR,ADRP
-    uint8_t immlo = Bits(instruction, 30, 29);  // flags?
+    uint8_t immlo = Bits(instruction, 30, 29);  // flags?s
     uint32_t immhi = Bits(instruction, 23, 5);  // flags?
     uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
 
     std::string dI;
 
-    dI = (op ? "ADRP " : "ADR ");
+    dI = (op ? "adrp " : "adr ");
 
     dI += GetRegName(Rd, true);
     dI += ", SignExtend(";
@@ -37,9 +37,9 @@ std::string DecodeADD_SUB_IMM_Category2(uint32_t instruction)
     std::string dI;
 
     if (!op)
-        dI = (S ? "ADDS " : "ADD ");
+        dI = (S ? "adds " : "add ");
     else
-        dI = (S ? "SUBS " : "SUB ");
+        dI = (S ? "subs " : "sub ");
 
     dI += GetRegName(Rd, sf);
     dI += ", ";
@@ -65,7 +65,7 @@ std::string DecodeADD_SUB_IMM_TAG_Category2(uint32_t instruction)
 
     std::string dI;
 
-    dI = (op ? "SUBG " : "ADDG ");
+    dI = (op ? "subg " : "addg ");
 
     dI += GetRegName(Rd, true);
     dI += ", ";
@@ -94,11 +94,11 @@ std::string DecodeMIN_MAX_Category2(uint32_t instruction)
 
     switch (opc)
     {
-    case 0b0000: dI = "SMAX "; break;
-    case 0b0001: dI = "UMAX "; break;
-    case 0b0010: dI = "SMIN "; break;
-    case 0b0011: dI = "UMIN "; break;
-    default:    dI = "UNDEFINED "; break;
+    case 0b0000: dI = "smax "; break;
+    case 0b0001: dI = "umax "; break;
+    case 0b0010: dI = "smin "; break;
+    case 0b0011: dI = "umin "; break;
+    default:    dI = "undefined "; break;
     }
 
     dI += GetRegName(Rd, sf);
@@ -126,11 +126,11 @@ std::string DecodeLOGICAL_IMM_Category2(uint32_t instruction)
 
     switch (opc)
     {
-    case 0b00: dI = "AND "; break;
-    case 0b01: dI = "ORR "; break;
-    case 0b10: dI = "EOR "; break;
-    case 0b11: dI = "ANDS "; break;
-    default:    dI = "UNDEFINED "; break;
+    case 0b00: dI = "and "; break;
+    case 0b01: dI = "orr "; break;
+    case 0b10: dI = "eor "; break;
+    case 0b11: dI = "ands "; break;
+    default:    dI = "undefined "; break;
     }
 
     dI += GetRegName(Rd, sf);
@@ -161,10 +161,10 @@ std::string DecodeMOVE_WIDE_IMM_Category2(uint32_t instruction)
 
     switch (opc)
     {
-    case 0b00: dI = "MOVN "; break;
-    case 0b10: dI = "MOVZ "; break;
-    case 0b11: dI = "MOVK "; break;
-    default:    dI = "UNDEFINED "; break;
+    case 0b00: dI = "movn "; break;
+    case 0b10: dI = "movz "; break;
+    case 0b11: dI = "movk "; break;
+    default:    dI = "undefined "; break;
     }
 
     dI += GetRegName(Rd, sf);
@@ -173,7 +173,7 @@ std::string DecodeMOVE_WIDE_IMM_Category2(uint32_t instruction)
     dI += std::to_string(imm16);
     dI += ", ";
 
-    dI += "LSL#";
+    dI += "lsl#";
     dI += std::to_string(hw * 16); // shift by 0/16 (if 64bit also 32 or 48)
     return dI;
 }
@@ -191,10 +191,10 @@ std::string DecodeBITFIELD_Category2(uint32_t instruction)
 
     switch (opc)
     {
-    case 0b00: dI = "SBFM "; break;
-    case 0b01: dI = "BFM "; break;
-    case 0b10: dI = "UBFM "; break;
-    default:    dI = "UNDEFINED "; break;
+    case 0b00: dI = "sbfm "; break;
+    case 0b01: dI = "bfm "; break;
+    case 0b10: dI = "ubfm "; break;
+    default:    dI = "undefined "; break;
     }
 
     dI += GetRegName(Rd, sf);

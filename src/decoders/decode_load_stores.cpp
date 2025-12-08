@@ -12,37 +12,37 @@ std::string DecodeLOAD_STORE_REG_IMM_Category2(uint32_t instruction, LOAD_STORES
 
     static const std::unordered_map<uint16_t, std::string> table =
     {
-        {0b00'0'00, "STRB "},
-        {0b00'0'01, "LDRB "},
-        {0b00'0'10, "LDRSB "},   // 64-bit sign-extend
-        {0b00'0'11, "LDRSB "},   // 32-bit sign-extend
+        {0b00'0'00, "strb "},
+        {0b00'0'01, "ldrb "},
+        {0b00'0'10, "ldrsb "},   // 64-bit sign-extend
+        {0b00'0'11, "ldrsb "},   // 32-bit sign-extend
 
-        {0b00'1'00, "STR "},     // 8-bit SIMD/FP
-        {0b00'1'01, "LDR "},
-        {0b00'1'10, "STR "},     // 128-bit SIMD/FP
-        {0b00'1'11, "LDR "},
+        {0b00'1'00, "str "},     // 8-bit SIMD/FP
+        {0b00'1'01, "ldr "},
+        {0b00'1'10, "str "},     // 128-bit SIMD/FP
+        {0b00'1'11, "ldr "},
 
-        {0b01'0'00, "STRH "},
-        {0b01'0'01, "LDRH "},
-        {0b01'0'10, "LDRSH "},   // 64
-        {0b01'0'11, "LDRSH "},   // 32
+        {0b01'0'00, "strh "},
+        {0b01'0'01, "ldrh "},
+        {0b01'0'10, "ldrsh "},   // 64
+        {0b01'0'11, "ldrsh "},   // 32
 
-        {0b01'1'00, "STR "},     // 16-bit SIMD/FP
-        {0b01'1'01, "LDR "},
+        {0b01'1'00, "str "},     // 16-bit SIMD/FP
+        {0b01'1'01, "ldr "},
 
-        {0b10'0'00, "STR "},     // 32-bit GP
-        {0b10'0'01, "LDR "},
-        {0b10'0'10, "LDRSW "},
+        {0b10'0'00, "str "},     // 32-bit GP
+        {0b10'0'01, "ldr "},
+        {0b10'0'10, "ldrsw "},
 
-        {0b10'1'00, "STR "},     // 32-bit SIMD&FP
-        {0b10'1'01, "LDR "},
+        {0b10'1'00, "str "},     // 32-bit SIMD&FP
+        {0b10'1'01, "ldr "},
 
-        {0b11'0'00, "STR "},     // 64-bit GP
-        {0b11'0'01, "LDR "},
-        {0b11'0'10, "PRFM "},
+        {0b11'0'00, "str "},     // 64-bit GP
+        {0b11'0'01, "ldr "},
+        {0b11'0'10, "prfm "},
 
-        {0b11'1'00, "STR "},     // 64-bit SIMD&FP
-        {0b11'1'01, "LDR "},
+        {0b11'1'00, "str "},     // 64-bit SIMD&FP
+        {0b11'1'01, "ldr "},
     };
 
     auto it = table.find(key);
@@ -56,11 +56,11 @@ std::string DecodeLOAD_STORE_REG_IMM_Category2(uint32_t instruction, LOAD_STORES
     uint32_t Rt = Bits(instruction, 4, 0);
 
     // special case
-    if (dI == "PRFM")
-        return "PRFM " + std::to_string(imm12) + ", [X" + std::to_string(Rn) + "]";
+    if (dI == "prfm")
+        return "prfm " + std::to_string(imm12) + ", [x" + std::to_string(Rn) + "]";
 
     bool reg_type{};
-    if (size == 0b11 || dI == "LDRSW" || (dI.substr(0, 5) == "LDRS" && opc == 0b10))
+    if (size == 0b11 || dI == "ldrsw" || (dI.substr(0, 5) == "ldrs" && opc == 0b10))
         reg_type = true;
     else
         reg_type = false;
@@ -95,18 +95,18 @@ std::string DecodeLOAD_STORE_REG_PAIR_Category2(uint32_t instruction, LOAD_STORE
 
     static const std::unordered_map<uint16_t, std::string> table =
     {
-        {0b00'0'0, "STP "},      //32-bit
-        {0b00'0'1, "LDP "},      //32-bit
-        {0b00'1'0, "STP "},      //32-bit (SIMD&FP)
-        {0b00'1'1, "LDP "},      //32-bit (SIMD&FP)
-        {0b01'0'0, "STGP "},
-        {0b01'0'1, "LDPSW "},
-        {0b01'1'0, "STP "},      //64-bit (SIMD&FP)
-        {0b01'1'1, "LDP "},      //64-bit (SIMD&FP)
-        {0b10'0'0, "STP "},      //64-bit
-        {0b10'0'1, "LDP "},      //64-bit
-        {0b10'1'0, "STP "},      //128-bit (SIMD&FP)
-        {0b10'1'1, "LDP "},      //128-bit (SIMD&FP)
+        {0b00'0'0, "stp "},      //32-bit
+        {0b00'0'1, "ldp "},      //32-bit
+        {0b00'1'0, "stp "},      //32-bit (SIMD&FP)
+        {0b00'1'1, "ldp "},      //32-bit (SIMD&FP)
+        {0b01'0'0, "stgp "},
+        {0b01'0'1, "ldpsw "},
+        {0b01'1'0, "stp "},      //64-bit (SIMD&FP)
+        {0b01'1'1, "ldp "},      //64-bit (SIMD&FP)
+        {0b10'0'0, "stp "},      //64-bit
+        {0b10'0'1, "ldp "},      //64-bit
+        {0b10'1'0, "stp "},      //128-bit (SIMD&FP)
+        {0b10'1'1, "ldp "},      //128-bit (SIMD&FP)
 
     };
 
@@ -138,7 +138,7 @@ std::string DecodeLOAD_STORE_REG_PAIR_Category2(uint32_t instruction, LOAD_STORE
 
         return dI + GetRegName(Rt, reg_type) + "," + GetRegName(Rt2, reg_type) +
             ", [" + GetRegName(Rn, true) +
-            ", #-" + "offset" + +"]!";
+            ", #" + "offset" + +"]!";
     }
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_OFFS)
     {
