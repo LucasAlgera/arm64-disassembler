@@ -13,11 +13,11 @@ std::string DecodePC_REL_Category2(uint32_t instruction)
     dI = (op ? "adrp " : "adr ");
 
     dI += GetRegName(Rd, true);
-    dI += ", SignExtend(";
-    dI += std::to_string(immhi);
-    dI += ":";
-    dI += std::to_string(immlo);
-    dI += ", 64)";
+    dI += ", ";
+
+    uint32_t imm21 = (immhi << 2) | immlo;
+
+    dI += std::to_string(SignExtend(imm21, 21, 64));
 
     return dI;
 }
@@ -45,10 +45,11 @@ std::string DecodeADD_SUB_IMM_Category2(uint32_t instruction)
     dI += ", ";
 
     dI += GetRegName(Rn, sf);
-    dI += ", #";
+    
+    dI += ", #" + std::to_string(imm12);
 
-    int imm = sh ? (imm12 << 12) : imm12;
-    dI += std::to_string(imm);
+    dI += sh ? ", lsl #12" : ", lsl #0";
+
 
     return dI;
 }
@@ -107,7 +108,7 @@ std::string DecodeMIN_MAX_Category2(uint32_t instruction)
     dI += GetRegName(Rn, sf);
     dI += ", #";
 
-    dI += std::to_string(imm8);
+    dI += std::to_string(int8_t(imm8));
 
     return dI;
 }

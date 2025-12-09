@@ -27,11 +27,21 @@ InstructionCategory0 DecodeGlobalCategory0(uint32_t instruction)
             {
             case InstructionCategory0::LOAD_STORE: DecodeLOAD_STORES_Category1(instruction); break; return InstructionCategory0::UNKNOWN;
             case InstructionCategory0::DATA_PROC_IMM: DecodeDATA_PROC_IMM_Category1(instruction); break; return InstructionCategory0::UNKNOWN;
-            default: InstructionCategory0::UNKNOWN;     std::stringstream ss;
-                ss << "0x" << std::hex << std::uppercase << instruction;
+            default: InstructionCategory0::UNKNOWN;
+                //ss << "0x" << std::hex << std::uppercase << instruction;
 
-                std::cout << std::left << std::setw(15) << ss.str()
-                    << std::setw(8) << ">>>" << std::endl;
+                //std::cout << std::left << std::setw(15) << ss.str()
+                //    << std::setw(8) << ">>>" << std::endl;
+
+
+
+                std::stringstream ss;
+                ss << "// " << std::hex << std::uppercase << instruction;
+
+                std::cout << std::left << std::setw(30) << "_________"
+                    << std::setw(50) << ss.str() << std::endl;
+
+                //std::cout << "UNKOWN INSTRUCTION         " << std::hex << std::uppercase << instruction << std::endl;
                 return InstructionCategory0::UNKNOWN; break;
             }
         }
@@ -64,11 +74,10 @@ void DecodeDATA_PROC_IMM_Category1(uint32_t instruction)
             }
 
             std::stringstream ss;
-            ss << "0x" << std::hex << std::uppercase << instruction;
+            ss << "// " << std::hex << std::uppercase << instruction;
 
-            std::cout << std::left << std::setw(15) << ss.str()
-                << std::setw(8) << ">>>"
-                << dI << std::endl;
+            std::cout << std::left << std::setw(30) << dI
+                << std::setw(50) << ss.str() << std::endl;
 
         }
     }
@@ -92,21 +101,21 @@ void DecodeLOAD_STORES_Category1(uint32_t instruction)
         if (op0Match && op1Match && op2Match) 
         {
             switch (pattern.category) {
+            case LS::LOAD_REG:                  dI = DecodeLOAD_STORE_REG_Category2(instruction);                                       break; return;
             case LS::LOAD_STORE_REG_UIMM:       dI = DecodeLOAD_STORE_REG_IMM_Category2(instruction, LS::LOAD_STORE_REG_UIMM);          break; return;
             case LS::LOAD_STORE_REG_IMM_PRIDX:  dI = DecodeLOAD_STORE_REG_IMM_Category2(instruction, LS::LOAD_STORE_REG_IMM_PRIDX);     break; return;
             case LS::LOAD_STORE_REG_IMM_PIDX:   dI = DecodeLOAD_STORE_REG_IMM_Category2(instruction, LS::LOAD_STORE_REG_IMM_PIDX);      break; return;
             case LS::LOAD_STORE_REG_PAIR_PIDX:  dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_PIDX);    break; return;
             case LS::LOAD_STORE_REG_PAIR_OFFS:  dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_OFFS);    break; return;
-            case LS::LOAD_STORE_REG_PAIR_PRIDX:  dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_PRIDX);    break; return;
+            case LS::LOAD_STORE_REG_PAIR_PRIDX:  dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_PRIDX);  break; return;
             default: LS::UNKNOWN; dI = "UNKNOWN"; break;
 
             }
             std::stringstream ss;
-            ss << "0x" << std::hex << std::uppercase << instruction;
+            ss << "// " << std::hex << std::uppercase << instruction;
 
-            std::cout << std::left << std::setw(15) << ss.str()
-                << std::setw(8) << ">>>"
-                << dI << std::endl;
+            std::cout << std::left << std::setw(30) << dI
+                << std::setw(50) << ss.str() << std::endl;
         }
     }
     return;

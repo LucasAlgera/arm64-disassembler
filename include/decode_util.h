@@ -1,6 +1,7 @@
 #pragma once
 #include <utility>
 #include <string>
+#include <cassert>
 
 constexpr uint32_t Bits(uint32_t value, int hi, int lo = -1)
 {
@@ -41,4 +42,25 @@ static std::string GetRegName(uint8_t registry, bool width)
         return std::string("x") + std::to_string(registry);
 
     return std::string("w") + std::to_string(registry);
+}
+
+// Sign-extend an M-bit number x to N bits
+static int64_t SignExtend(uint64_t x, int M, int N) {
+    assert(N >= M);
+
+    // Extract the sign bit
+    bool sign = (x >> (M - 1)) & 1;
+
+    if (sign) {
+        // If sign bit is 1, extend with 1s
+        uint64_t extend_mask = ((1ULL << (N - M)) - 1) << M;
+        x |= extend_mask;
+    }
+    // Else sign bit is 0, nothing to do (upper bits already 0)
+    return static_cast<int64_t>(x);
+}
+
+static uint64_t Zeros(int N) {
+    assert(N <= 64); // can't fit more than 64 bits in uint64_t
+    return 0;        // just return all zeros
 }
