@@ -217,8 +217,8 @@ struct DATA_PROC_REG_Pattern1
 static const DATA_PROC_REG_Pattern1 DATA_PROC_REG_patterns[] =
 {
                                               // op0   op0m  op1   op1m   op2     op2m
-{ DATA_PROC_REG_Category1::DATA_PROC_1,          0b0,  0b1,  0b1,  0b1,  0b0110, 0b1111}, 
 { DATA_PROC_REG_Category1::DATA_PROC_2,          0b0,  0b1,  0b1,  0b1,  0b0110, 0b1111},
+{ DATA_PROC_REG_Category1::DATA_PROC_1,          0b0,  0b1,  0b1,  0b1,  0b0110, 0b1111}, 
 { DATA_PROC_REG_Category1::LOG_SHIFT,            0b0,  0b0,  0b0,  0b1,  0b0000, 0b1000},
 { DATA_PROC_REG_Category1::ADD_SUB_SHIFT_REG,    0b0,  0b0,  0b0,  0b1,  0b1000, 0b1001},
 { DATA_PROC_REG_Category1::ADD_SUB_EXT_REG,      0b0,  0b0,  0b0,  0b1,  0b1001, 0b1001},

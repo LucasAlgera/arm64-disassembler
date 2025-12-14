@@ -3,6 +3,7 @@
 #include "decoders/decode_data_proc_imm.h"
 #include "decoders/decode_load_stores.h"
 #include "decoders/decode_branches.h"
+#include "decoders/decode_data_proc_reg.h"
 #include "decode_util.h"
 
 #include <iostream>
@@ -66,7 +67,7 @@ void DecodeDATA_PROC_IMM_Category1(uint32_t instruction)
             case DATA_PROC_IMM_Category1::MOVE_WIDE_IMM :   dI = DecodeMOVE_WIDE_IMM_Category2(instruction);    break; return;
             case DATA_PROC_IMM_Category1::BITFIELD :        dI = DecodeBITFIELD_Category2(instruction);         break; return;
             case DATA_PROC_IMM_Category1::EXTRACT:          dI = DecodeEXTRACT_Category2(instruction);          break; return;
-            default: DATA_PROC_IMM_Category1::UNKNOWN;      dI = "UNKNOWN"; break; return;
+            default: DATA_PROC_IMM_Category1::UNKNOWN;      dI = "UNKNOWN DPI"; break; return;
             }
 
             std::stringstream ss;
@@ -104,7 +105,7 @@ void DecodeLOAD_STORES_Category1(uint32_t instruction)
             case LS::LOAD_STORE_REG_PAIR_PIDX:  dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_PIDX);    break; return;
             case LS::LOAD_STORE_REG_PAIR_OFFS:  dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_OFFS);    break; return;
             case LS::LOAD_STORE_REG_PAIR_PRIDX: dI = DecodeLOAD_STORE_REG_PAIR_Category2(instruction, LS::LOAD_STORE_REG_PAIR_PRIDX);   break; return;
-            default: LS::UNKNOWN; dI = "UNKNOWN"; break; return;
+            default: LS::UNKNOWN; dI = "UNKNOWN LS"; break; return;
 
             }
             std::stringstream ss;
@@ -135,7 +136,7 @@ void DecodeDATA_BRANCH_EXCEPTION_Category1(uint32_t instruction)
             case LS::UNCONDITIONAL_B_R: dI = DecodeUNCONDITIONAL_B_R_Category2(instruction); break; return;
             case LS::UNCONDITIONAL_B_I: dI = DecodeUNCONDITIONAL_B_I_Category2(instruction); break; return;
             case LS::COMP_BRANCH: dI = DecodeCOMP_BRANCH_Category2(instruction); break; return;
-            default: LS::UNKNOWN; dI = "UNKNOWN"; break; return; 
+            default: LS::UNKNOWN; dI = "UNKNOWN BE"; break; return; 
 
             }
 
@@ -150,7 +151,7 @@ void DecodeDATA_BRANCH_EXCEPTION_Category1(uint32_t instruction)
     std::stringstream ss;
     ss << "// " << std::hex << std::uppercase << instruction;
 
-    std::cout << std::left << std::setw(30) << "UNKOWN"
+    std::cout << std::left << std::setw(30) << "UNKOWN BE"
         << std::setw(50) << ss.str();
 }
 
@@ -173,8 +174,12 @@ void DecodeDATA_PROC_REG_Category1(uint32_t instruction)
         if (op0Match && op1Match && op2Match) {
             switch (pattern.category)
             {
-            case DATA_PROC_REG_Category1::LOG_SHIFT: ;                     break; return;
-            default: DATA_PROC_REG_Category1::UNKNOWN;      dI = "UNKNOWN"; break; return;
+            case DATA_PROC_REG_Category1::DATA_PROC_2:  dI = DecodeDATA_PROC_2_Category2(instruction);             break; return;
+            case DATA_PROC_REG_Category1::DATA_PROC_1:  dI = DecodeDATA_PROC_1_Category2(instruction);             break; return;
+            case DATA_PROC_REG_Category1::LOG_SHIFT:    dI = DecodeLOG_SHIFT_Category2(instruction);     break; return;
+            case DATA_PROC_REG_Category1::ADD_SUB_SHIFT_REG:    dI = DecodeADD_SUB_SHIFT_REG_Category2(instruction);     break; return;
+            case DATA_PROC_REG_Category1::ADD_SUB_EXT_REG:    dI = DecodeADD_SUB_EXT_REG_Category2(instruction);     break; return;
+            default: DATA_PROC_REG_Category1::UNKNOWN;      dI = "UNKNOWN DPR"; break; return;
             }
 
             std::stringstream ss;
