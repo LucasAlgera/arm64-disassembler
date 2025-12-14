@@ -2,6 +2,7 @@
 #include <utility>
 #include <string>
 #include <cassert>
+#include <sstream>
 
 constexpr uint32_t Bits(uint32_t value, int hi, int lo = -1)
 {
@@ -9,30 +10,9 @@ constexpr uint32_t Bits(uint32_t value, int hi, int lo = -1)
     return (value >> lo) & ((1u << (hi - lo + 1)) - 1);
 }
 
-static uint32_t EndianSwapper(uint32_t value)
-{ 
-    uint32_t leftmost_byte;
-    uint32_t left_middle_byle;
-    uint32_t right_middle_byte;
-    uint32_t rightmost_byte;
-
-    uint32_t result;
-
-    leftmost_byte = (value & 0x000000FF) >> 0;
-    left_middle_byle = (value & 0x0000FF00) >> 8;
-    right_middle_byte = (value & 0x00FF0000) >> 16;
-    rightmost_byte = (value & 0xFF000000) >> 24;
-
-    leftmost_byte <<= 24;
-    left_middle_byle <<= 16;
-
-    right_middle_byte <<= 8;
-    rightmost_byte <<= 0;
-
-    result = (leftmost_byte | left_middle_byle |
-        right_middle_byte | rightmost_byte);
-
-    return result;
+static uint32_t EndianSwapper(uint32_t v)
+{
+    return (v << 24) | ((v << 8) & 0x00FF0000) | ((v >> 8) & 0x0000FF00) | (v >> 24);
 }
 static std::string GetRegName(uint8_t registry, bool width)
 {
@@ -45,7 +25,8 @@ static std::string GetRegName(uint8_t registry, bool width)
 }
 
 // Sign-extend an M-bit number x to N bits
-static int64_t SignExtend(uint64_t x, int M, int N) {
+template <typename T>
+static T SignExtend(T x, int M, int N) {
     assert(N >= M);
 
     // Extract the sign bit
@@ -53,14 +34,31 @@ static int64_t SignExtend(uint64_t x, int M, int N) {
 
     if (sign) {
         // If sign bit is 1, extend with 1s
-        uint64_t extend_mask = ((1ULL << (N - M)) - 1) << M;
+        T extend_mask = ((1ULL << (N - M)) - 1) << M;
         x |= extend_mask;
     }
-    // Else sign bit is 0, nothing to do (upper bits already 0)
-    return static_cast<int64_t>(x);
+    return static_cast<T>(x);
 }
 
 static uint64_t Zeros(int N) {
-    assert(N <= 64); // can't fit more than 64 bits in uint64_t
-    return 0;        // just return all zeros
+    assert(N <= 64);
+    return 0;
+}
+template <typename T>
+static std::string ToHexFormat(T value)
+{
+    std::stringstream ss;
+    ss << "0x" << std::hex << std::uppercase;
+
+    if constexpr (std::is_signed_v<T>)
+    {
+        if (value < 0)
+        {
+            ss << "-" << static_cast<std::make_unsigned_t<T>>(-value);
+            return ss.str();
+        }
+    }
+
+    ss << +static_cast<std::make_unsigned_t<T>>(value);
+    return ss.str();
 }

@@ -4,3 +4,5 @@
 InstructionCategory0 DecodeGlobalCategory0(uint32_t instruction);
 void DecodeDATA_PROC_IMM_Category1(uint32_t instruction);
 void DecodeLOAD_STORES_Category1(uint32_t instruction);
+void DecodeDATA_BRANCH_EXCEPTION_Category1(uint32_t instruction);
+void DecodeDATA_PROC_REG_Category1(uint32_t instruction);

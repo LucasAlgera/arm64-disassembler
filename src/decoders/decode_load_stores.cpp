@@ -114,7 +114,7 @@ std::string DecodeLOAD_STORE_REG_PAIR_Category2(uint32_t instruction, LOAD_STORE
     if (it == table.end())
         return "UNALLOCATED";
 
-    uint8_t imm7 = Bits(instruction, 21, 15);
+    int8_t imm7 = Bits(instruction, 21, 15);
     uint8_t Rt2 = Bits(instruction, 14, 10);
     uint8_t Rn = Bits(instruction, 9, 5);
     uint8_t Rt = Bits(instruction, 4, 0);
@@ -124,28 +124,92 @@ std::string DecodeLOAD_STORE_REG_PAIR_Category2(uint32_t instruction, LOAD_STORE
     bool reg_type{};
     reg_type = opc ? 1 : 0;
 
-    if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PIDX)
+    std::string t1{};
+    std::string t2{};
+    int32_t offset{};
+
+    if (!V)
     {
-        uint32_t offset = opc ? imm7 * 8: imm7 * 4;
-        
-        return dI + GetRegName(Rt, reg_type) + "," + GetRegName(Rt2, reg_type) +
+        offset = SignExtend(imm7, 7, 64);
+        offset <<= (opc ? 3 : 2);
+        t1 = GetRegName(Rt, reg_type);
+        t2 = GetRegName(Rt2, reg_type);
+    }
+    else
+    {
+        offset = SignExtend(imm7, 7, 64);
+        opc ? offset <<= 3 : offset <<= 2;
+        if (opc == 0b00)
+            t1 = "S" + std::to_string(Rt); t2 = "s" + std::to_string(Rt2);
+        if (opc == 0b01)
+            t1 = "d" + std::to_string(Rt); t2 = "d" + std::to_string(Rt2);
+        if (opc == 0b10)
+            t1 = "q" + std::to_string(Rt); t2 = "q" + std::to_string(Rt2);
+
+    }
+
+    if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PIDX)
+    {    
+        return dI + t1 + "," + t2 +
         ", [" + GetRegName(Rn, true) + "]" +
-            ", #" + "offset";
+            ", #" + ToHexFormat(offset);
     }
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PRIDX)
     {
-        uint32_t offset = opc ? imm7 * 8 : imm7 * 4;
-
-        return dI + GetRegName(Rt, reg_type) + "," + GetRegName(Rt2, reg_type) +
+        return dI + t1 + "," + t2 +
             ", [" + GetRegName(Rn, true) +
-            ", #" + "offset" + +"]!";
+            ", #" + ToHexFormat(offset) + +"]!";
     }
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_OFFS)
     {
-        uint32_t offset = opc ? imm7 * 8 : imm7 * 4;
-
-        return dI + GetRegName(Rt, reg_type) + "," + GetRegName(Rt2, reg_type) +
+        return dI + t1 + "," + t2 +
             ", [" + GetRegName(Rn, true) +
-            ", #" + "offset" + "]";
+            ", #" + ToHexFormat(offset) + "]";
     }
 }
+std::string DecodeLOAD_STORE_REG_Category2(uint32_t instruction)
+{
+    uint8_t opc = Bits(instruction, 31, 30);
+    uint8_t VR = Bits(instruction, 26);
+
+    uint16_t key = (opc << 2) | VR;
+
+    static const std::unordered_map<uint16_t, std::string> table =
+    {
+        {0b00'0, "ldr "},      //32-bit
+        {0b00'1, "ldr "},      //32-bit (SIMD&FP)
+        {0b01'0, "ldr "},      //64-bit 
+        {0b01'1, "ldr "},      //64-bit (SIMD&FP)
+        {0b10'0, "ldrsw "},
+        {0b10'1, "ldr "},      //(SIMD&FP)
+        {0b11'0, "prfm "},     //128-bit (SIMD&FP)
+        {0b11'1, "- "},     
+    };
+
+    auto it = table.find(key);
+    if (it == table.end())
+        return "UNALLOCATED";
+
+    std::string dI = it->second;
+
+    uint32_t imm19 = Bits(instruction, 23, 5);
+    uint8_t Rt = Bits(instruction, 4, 0);
+
+    if (!VR)
+        dI += GetRegName(Rt, opc);
+    else
+    {
+        if (opc == 0b00)
+            dI += "S" + std::to_string(Rt);
+        if(opc == 0b01)
+            dI += "D" + std::to_string(Rt);
+        if(opc == 0b10)
+            dI += "Q" + std::to_string(Rt);
+    }
+
+    dI += ", ";
+    dI += ToHexFormat(SignExtend(imm19 << 2, 21, 64));
+
+    return dI;
+}
+

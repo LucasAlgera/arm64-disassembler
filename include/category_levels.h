@@ -113,20 +113,20 @@ enum class LOAD_STORES_Category1
     //COMP_SWAP, 
     //LDIAPP_STILP, 
     //LDIAPR_STILP,
-    LOAD_REG,                               // 2
+    LOAD_REG,                            
     //MEMCP_MEMSET,                        
     //LOAD_STORE_NOALLOC_PAIR,             
-    LOAD_STORE_REG_PAIR_PIDX,           // 1
-    LOAD_STORE_REG_PAIR_OFFS,           // 1
-    LOAD_STORE_REG_PAIR_PRIDX,          // 1
+    LOAD_STORE_REG_PAIR_PIDX,
+    LOAD_STORE_REG_PAIR_OFFS,
+    LOAD_STORE_REG_PAIR_PRIDX,
     LOAD_STORE_REG_UNSC_IMM,                // 2
-    LOAD_STORE_REG_IMM_PIDX,                // 2
+    LOAD_STORE_REG_IMM_PIDX,
     //LOAD_STORE_REG_UNPR,                 
-    LOAD_STORE_REG_IMM_PRIDX,               // 2
+    LOAD_STORE_REG_IMM_PRIDX,
     //ATM_MEM_OPERATION,                   
     LOAD_STORE_REG_OFFS,                        // 3
     //LOAD_STORE_REG_PAC,                  
-    LOAD_STORE_REG_UIMM,                // 1
+    LOAD_STORE_REG_UIMM, 
     UNKNOWN
 };
 
@@ -144,10 +144,83 @@ struct LOAD_STORES_Pattern1
 static const LOAD_STORES_Pattern1 LOAD_STORES_patterns[] =
 {
                                                         // op0     op0m    op1  op1m        op2                 op2m
+    {LOAD_STORES_Category1::LOAD_REG,                    0b0001,  0b0011,  0b0, 0b0,   0b000000000000000, 0b10000000000000},
     {LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PIDX,    0b0010,  0b0011,  0b0, 0b0,   0b010000000000000, 0b110000000000000},
     {LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_OFFS,    0b0010,  0b0011,  0b0, 0b0,   0b100000000000000, 0b110000000000000},
     {LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PRIDX,   0b0010,  0b0011,  0b0, 0b0,   0b110000000000000, 0b110000000000000},
     {LOAD_STORES_Category1::LOAD_STORE_REG_UIMM,         0b0011,  0b0011,  0b0, 0b0,   0b100000000000000, 0b100000000000000},
     {LOAD_STORES_Category1::LOAD_STORE_REG_IMM_PRIDX,    0b0011,  0b0011,  0b0, 0b0,   0b000000000000011, 0b100100000000011},
     {LOAD_STORES_Category1::LOAD_STORE_REG_IMM_PIDX,     0b0011,  0b0011,  0b0, 0b0,   0b000000000000001, 0b100100000000011},
+};
+
+
+
+//--------------------------------------
+//--BRANCH_EXCEPTION--------------------
+//--------------------------------------
+
+enum class BRANCH_EXCEPTION_Category1
+{
+    CONDITIONAL_B,
+    SYS_INSTR, 
+    UNCONDITIONAL_B_R, 
+    UNCONDITIONAL_B_I,
+    COMP_BRANCH,
+    UNKNOWN
+};
+
+struct BRANCH_EXCEPTION_Pattern1
+{
+    BRANCH_EXCEPTION_Category1 category;
+    uint8_t op0;
+    uint8_t op0m;  // mask
+    uint16_t op1;
+    uint16_t op1m;  // mask
+};
+
+static const BRANCH_EXCEPTION_Pattern1 BRANCH_EXCEPTION_Patterns[] =
+{
+    { BRANCH_EXCEPTION_Category1::CONDITIONAL_B,     0b010, 0b111, 0b00000000000000, 0b11000000000000 },
+    { BRANCH_EXCEPTION_Category1::SYS_INSTR,         0b110, 0b111, 0b01000010000000, 0b11111110000000 },
+    { BRANCH_EXCEPTION_Category1::UNCONDITIONAL_B_R, 0b110, 0b111, 0b10000000000000, 0b10000000000000 },
+    { BRANCH_EXCEPTION_Category1::UNCONDITIONAL_B_I, 0b000, 0b011, 0b00000000000000, 0b00000000000000 },
+    { BRANCH_EXCEPTION_Category1::COMP_BRANCH,       0b001, 0b011, 0b00000000000000, 0b00000000000000 }
+};
+
+
+//--------------------------------------
+//--DATA_PROCESSING_REGISTER------------
+//--------------------------------------
+
+enum class DATA_PROC_REG_Category1
+{
+    DATA_PROC_1, 
+    DATA_PROC_2, 
+    LOG_SHIFT,
+    ADD_SUB_SHIFT_REG, 
+    ADD_SUB_EXT_REG,
+    DATA_PROC_3,
+    UNKNOWN
+};
+
+struct DATA_PROC_REG_Pattern1
+{
+    DATA_PROC_REG_Category1 category;
+    uint8_t op0;
+    uint8_t op0m; // mask
+    uint8_t op1;
+    uint8_t op1m; // mask
+    uint8_t op2;
+    uint8_t op2m; // mask
+};
+
+static const DATA_PROC_REG_Pattern1 DATA_PROC_REG_patterns[] =
+{
+                                              // op0   op0m  op1   op1m   op2     op2m
+{ DATA_PROC_REG_Category1::DATA_PROC_1,          0b0,  0b1,  0b1,  0b1,  0b0110, 0b1111}, 
+{ DATA_PROC_REG_Category1::DATA_PROC_2,          0b0,  0b1,  0b1,  0b1,  0b0110, 0b1111},
+{ DATA_PROC_REG_Category1::LOG_SHIFT,            0b0,  0b0,  0b0,  0b1,  0b0000, 0b1000},
+{ DATA_PROC_REG_Category1::ADD_SUB_SHIFT_REG,    0b0,  0b0,  0b0,  0b1,  0b1000, 0b1001},
+{ DATA_PROC_REG_Category1::ADD_SUB_EXT_REG,      0b0,  0b0,  0b0,  0b1,  0b1001, 0b1001},
+{ DATA_PROC_REG_Category1::DATA_PROC_3,          0b0,  0b0,  0b1,  0b1,  0b1000, 0b1000}
 };

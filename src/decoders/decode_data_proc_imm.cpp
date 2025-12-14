@@ -17,7 +17,7 @@ std::string DecodePC_REL_Category2(uint32_t instruction)
 
     uint32_t imm21 = (immhi << 2) | immlo;
 
-    dI += std::to_string(SignExtend(imm21, 21, 64));
+    dI += ToHexFormat(SignExtend(imm21, 21, 64));
 
     return dI;
 }
@@ -48,7 +48,8 @@ std::string DecodeADD_SUB_IMM_Category2(uint32_t instruction)
     
     dI += ", #" + std::to_string(imm12);
 
-    dI += sh ? ", lsl #12" : ", lsl #0";
+    if (sh)
+        dI += "lsl #12";
 
 
     return dI;
@@ -174,8 +175,11 @@ std::string DecodeMOVE_WIDE_IMM_Category2(uint32_t instruction)
     dI += std::to_string(imm16);
     dI += ", ";
 
-    dI += "lsl#";
-    dI += std::to_string(hw * 16); // shift by 0/16 (if 64bit also 32 or 48)
+    if (hw)
+    {
+        dI += "lsl #";
+        dI += std::to_string(hw * 16); // shift by 0/16 (if 64bit also 32 or 48)=
+    }
     return dI;
 }
 std::string DecodeBITFIELD_Category2(uint32_t instruction)
