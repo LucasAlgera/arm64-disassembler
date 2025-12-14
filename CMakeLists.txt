@@ -9,7 +9,22 @@ if(MSVC)
 else()
 	add_compile_options(-Wall -Wextra -pedantic)
 endif()
-
+source_group(
+    "Header Files/decoders"
+    FILES
+        include/decoders/decode_data_proc_imm.h
+        include/decoders/decode_data_proc_reg.h
+        include/decoders/decode_load_stores.h
+        include/decoders/decode_branches.h
+)
+source_group(
+    "Source Files/decoders"
+    FILES
+        src/decoders/decode_data_proc_imm.cpp
+        src/decoders/decode_data_proc_reg.cpp
+        src/decoders/decode_load_stores.cpp
+        src/decoders/decode_branches.cpp
+)
 add_executable(arm64-disasm 
 	src/main.cpp
 	src/disassembler.cpp
@@ -22,8 +37,12 @@ add_executable(arm64-disasm
 	include/classify.h
 	src/decoders/decode_data_proc_imm.cpp
 	include/decoders/decode_data_proc_imm.h
+	src/decoders/decode_data_proc_reg.cpp
+	include/decoders/decode_data_proc_reg.h
 	src/decoders/decode_load_stores.cpp
 	include/decoders/decode_load_stores.h
+	src/decoders/decode_branches.cpp
+	include/decoders/decode_branches.h
 	)
 
 target_include_directories(arm64-disasm PRIVATE
