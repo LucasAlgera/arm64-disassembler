@@ -14,9 +14,9 @@ static uint32_t EndianSwapper(uint32_t v)
 {
     return (v << 24) | ((v << 8) & 0x00FF0000) | ((v >> 8) & 0x0000FF00) | (v >> 24);
 }
-static std::string GetRegName(uint8_t registry, bool width)
+static std::string GetRegName(uint8_t registry, bool width, bool sp = true)
 {
-    if (registry == 31)
+    if (registry == 31 && sp)
         return "sp";
     if(width)
         return std::string("x") + std::to_string(registry);
@@ -26,7 +26,8 @@ static std::string GetRegName(uint8_t registry, bool width)
 
 // Sign-extend an M-bit number x to N bits
 template <typename T>
-static T SignExtend(T x, int M, int N) {
+static T SignExtend(T x, int M, int N) 
+{
     assert(N >= M);
 
     // Extract the sign bit
@@ -40,25 +41,32 @@ static T SignExtend(T x, int M, int N) {
     return static_cast<T>(x);
 }
 
-static uint64_t Zeros(int N) {
+static uint64_t Zeros(int N) 
+{
     assert(N <= 64);
     return 0;
 }
+
 template <typename T>
 static std::string ToHexFormat(T value)
 {
     std::stringstream ss;
-    ss << "0x" << std::hex << std::uppercase;
 
     if constexpr (std::is_signed_v<T>)
     {
         if (value < 0)
         {
-            ss << "-" << static_cast<std::make_unsigned_t<T>>(-value);
+            ss << "-0x" << std::hex << std::uppercase;
+            ss << static_cast<std::make_unsigned_t<T>>(-value);
             return ss.str();
         }
+        else
+            ss << "0x" << std::hex << std::uppercase;
     }
+    else
+        ss << "0x" << std::hex << std::uppercase;
 
     ss << +static_cast<std::make_unsigned_t<T>>(value);
     return ss.str();
 }
+

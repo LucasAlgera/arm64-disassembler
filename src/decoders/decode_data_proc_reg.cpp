@@ -217,11 +217,11 @@ std::string DecodeADD_SUB_SHIFT_REG_Category2(uint32_t instruction)
     uint8_t Rn = Bits(instruction, 9, 5);
     uint8_t Rd = Bits(instruction, 4, 0);
 
-    dI += GetRegName(Rd, sf);
+    dI += GetRegName(Rd, sf, false);
     dI += ", ";
-    dI += GetRegName(Rn, sf);
+    dI += GetRegName(Rn, sf, false);
     dI += ", ";
-    dI += GetRegName(Rm, sf);
+    dI += GetRegName(Rm, sf, false);
 
     if (imm6)
     {
@@ -266,11 +266,11 @@ std::string DecodeADD_SUB_EXT_REG_Category2(uint32_t instruction)
     uint8_t Rn = Bits(instruction, 9, 5);
     uint8_t Rd = Bits(instruction, 4, 0);
 
-    dI += GetRegName(Rd, sf);
+    dI += GetRegName(Rd, sf, false);
     dI += ", ";
     dI += GetRegName(Rn, sf);
     dI += ", ";
-    dI += GetRegName(Rm, sf);
+    dI += GetRegName(Rm, sf, false);
 
     if (imm3)
     {

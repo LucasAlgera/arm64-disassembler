@@ -5,9 +5,8 @@
 std::string DecodeCONDITIONAL_B_Category2(uint32_t instruction)
 {
 	uint32_t imm19 = Bits(instruction, 23, 5);
-	uint8_t o0 = Bits(instruction, 4);
+	bool o0 = Bits(instruction, 4);
 	uint8_t cond = Bits(instruction, 3, 0);
-	
 	
 	std::string dI{};
 	dI = o0 ? "BC." : "B.";
@@ -29,17 +28,51 @@ std::string DecodeCONDITIONAL_B_Category2(uint32_t instruction)
         {0b1100, "gt "},
         {0b1101, "le "},
         {0b1110, "al "},
-        {0b1111, "nv "} 
-
+        {0b1111, "nv "}
     };
 
     auto it = table.find(cond);
     if (it == table.end())
         return "UNALLOCATED";
+
     dI += it->second;
 
     dI += ToHexFormat(SignExtend(imm19 << 2, 21, 64));
 	return dI;
+}
+
+std::string DecodeHINTS_Category2(uint32_t instruction)
+{
+    uint8_t CRm = Bits(instruction, 11, 8);
+    uint8_t op2 = Bits(instruction, 7, 5);
+    
+    uint8_t key = (CRm << 7) | op2;
+
+    static const std::unordered_map<uint16_t, std::string> table =
+    {
+        {0b0000'000, "nop "},
+        {0b0000'001, "yield "},
+        {0b0000'010, "wfe "},
+        {0b0000'011, "wfi "},
+        {0b0000'100, "sev "},
+        {0b0000'101, "sevl "},
+        {0b0000'110, "dgh "},
+        {0b0010'000, "esb "},
+        {0b0010'001, "psb "},
+        {0b0010'010, "tsb "},
+        {0b0010'011, "gcsb "},
+        {0b0010'100, "csdb "},
+        {0b0010'110, "clrbhb "},
+    };
+
+    auto it = table.find(key);
+    if (it == table.end())
+        return std::string("hint #" + std::to_string(key));
+
+    std::string dI{};
+    dI += it->second;
+
+    return dI;
 }
 
 std::string DecodeSYS_INSTR_Category2(uint32_t instruction)
@@ -55,22 +88,19 @@ std::string DecodeSYS_INSTR_Category2(uint32_t instruction)
     dI = L ? "SYSL " : "SYS ";
 
     if (L)
-    {
         dI += GetRegName(Rt, true) + ", #" + std::to_string(op1) + ", C" + std::to_string(CRn) + ", C" + std::to_string(CRm) + ", #" + std::to_string(op2);
-    }
     else
-    {
         dI += "#" + std::to_string(op1) + ", C" + std::to_string(CRn) + ", C" + std::to_string(CRm) + ", #" + std::to_string(op2) + ", " + GetRegName(Rt, true);
-    }
+
     return dI;
 }
 
 std::string DecodeUNCONDITIONAL_B_R_Category2(uint32_t instruction)
 {
-    uint8_t opc = Bits(instruction, 24,21);
-    uint8_t op2 = Bits(instruction, 20,16);
-    uint8_t op3 = Bits(instruction, 15,10);
-    uint8_t Rn = Bits(instruction, 9,5);
+    uint8_t opc = Bits(instruction, 24, 21);
+    uint8_t op2 = Bits(instruction, 20, 16);
+    uint8_t op3 = Bits(instruction, 15, 10);
+    uint8_t Rn = Bits(instruction, 9, 5);
     uint8_t op4 = Bits(instruction, 4,0);
 
     uint32_t key{};
@@ -94,6 +124,7 @@ std::string DecodeUNCONDITIONAL_B_R_Category2(uint32_t instruction)
 
     if (it == table.end())
         return "UNALLOCATED";
+
     dI = it->second;
 
     if(opc == 0b10)
@@ -128,7 +159,6 @@ std::string DecodeCOMP_BRANCH_Category2(uint32_t instruction)
     dI += GetRegName(Rt, sf);
     dI += ", ";
     dI += ToHexFormat(SignExtend(static_cast<uint16_t>(imm19 << 2), 21, 64));
-
 
     return dI;
 }

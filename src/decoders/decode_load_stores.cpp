@@ -68,17 +68,17 @@ std::string DecodeLOAD_STORE_REG_IMM_Category2(uint32_t instruction, LOAD_STORES
     uint32_t offset = imm12 << size; // ARM rule: offset = imm12 << size
 
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_IMM_PIDX)
-        return dI + GetRegName(Rt, reg_type) +
+        return dI + GetRegName(Rt, reg_type, false) +
         ", [" + GetRegName(Rn, true) + "]" +
         ", #" + std::to_string(offset);
 
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_IMM_PRIDX)
-        return dI + GetRegName(Rt, reg_type) +
+        return dI + GetRegName(Rt, reg_type, false) +
         ", [" + GetRegName(Rn, true) +
         ", #" + std::to_string(offset) + "]!";
 
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_UIMM)
-        return dI + GetRegName(Rt, reg_type) +
+        return dI + GetRegName(Rt, reg_type, false) +
         ", [" + GetRegName(Rn, true) +
         ", #" + std::to_string(offset) + "]";
 
@@ -150,19 +150,19 @@ std::string DecodeLOAD_STORE_REG_PAIR_Category2(uint32_t instruction, LOAD_STORE
 
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PIDX)
     {    
-        return dI + t1 + "," + t2 +
+        return dI + t1 + ", " + t2 +
         ", [" + GetRegName(Rn, true) + "]" +
             ", #" + ToHexFormat(offset);
     }
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_PRIDX)
     {
-        return dI + t1 + "," + t2 +
+        return dI + t1 + ", " + t2 +
             ", [" + GetRegName(Rn, true) +
             ", #" + ToHexFormat(offset) + +"]!";
     }
     if (cat == LOAD_STORES_Category1::LOAD_STORE_REG_PAIR_OFFS)
     {
-        return dI + t1 + "," + t2 +
+        return dI + t1 + ", " + t2 +
             ", [" + GetRegName(Rn, true) +
             ", #" + ToHexFormat(offset) + "]";
     }
