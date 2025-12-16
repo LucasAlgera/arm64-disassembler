@@ -26,6 +26,7 @@ source_group(
         src/decoders/decode_branches.cpp
 )
 add_executable(arm64-disasm 
+	include/main.h
 	src/main.cpp
 	src/disassembler.cpp
 	include/disassembler.h
