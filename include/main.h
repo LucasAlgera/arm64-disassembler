@@ -43,7 +43,10 @@ void entrySingleInstruction()
             std::stoul(input, nullptr, 16)
             );
 
-        DecodeGlobalCategory0(EndianSwapper(instruction));
+        InstructionData dataInstruction{};
+        dataInstruction.instruction = EndianSwapper(instruction);
+        dataInstruction.va = 0x0;
+        std::cout << DecodeGlobalCategory0(dataInstruction) << std::endl;
         return;
     }
 }
@@ -85,9 +88,7 @@ void entryFileDecode()
         std::cerr << "Invalid choice.\n";
         return;
     }
-
-    ELFData elfdata;
-    LoadELF(elfFiles[choice-1].string(), elfdata);
+    LoadELF(elfFiles[choice-1].string());
 }
 
 void entry()

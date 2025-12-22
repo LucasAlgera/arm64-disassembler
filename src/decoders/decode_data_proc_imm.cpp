@@ -1,12 +1,12 @@
 #include <decoders/decode_data_proc_imm.h>
 #include <decode_util.h>
 
-std::string DecodePC_REL_Category2(uint32_t instruction)
+std::string DecodePC_REL_Category2(InstructionData instructionData)
 {
-    uint8_t op = Bits(instruction, 31);       // ADR,ADRP
-    uint8_t immlo = Bits(instruction, 30, 29);  // flags?s
-    uint32_t immhi = Bits(instruction, 23, 5);  // flags?
-    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+    uint8_t op = Bits(instructionData.instruction, 31);       // ADR,ADRP
+    uint8_t immlo = Bits(instructionData.instruction, 30, 29);  // flags?s
+    uint32_t immhi = Bits(instructionData.instruction, 23, 5);  // flags?
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);       // dest reg
 
     std::string dI;
 
@@ -24,15 +24,15 @@ std::string DecodePC_REL_Category2(uint32_t instruction)
 
 
 
-std::string DecodeADD_SUB_IMM_Category2(uint32_t instruction)
+std::string DecodeADD_SUB_IMM_Category2(InstructionData instructionData)
 {
-    uint8_t sf = Bits(instruction, 31);         // 64/32 bit
-    uint8_t op = Bits(instruction, 30);         // ADD,SUB
-    uint8_t S = Bits(instruction, 29);          // flags?
-    uint8_t sh = Bits(instruction, 22);         // shift?
-    uint16_t imm12 = Bits(instruction, 21, 10); // immediate
-    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
-    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+    uint8_t sf = Bits(instructionData.instruction, 31);         // 64/32 bit
+    uint8_t op = Bits(instructionData.instruction, 30);         // ADD,SUB
+    uint8_t S = Bits(instructionData.instruction, 29);          // flags?
+    uint8_t sh = Bits(instructionData.instruction, 22);         // shift?
+    uint16_t imm12 = Bits(instructionData.instruction, 21, 10); // immediate
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);       // dest reg
 
     std::string dI;
 
@@ -41,7 +41,7 @@ std::string DecodeADD_SUB_IMM_Category2(uint32_t instruction)
     else
         dI = (S ? "subs " : "sub ");
 
-    dI += GetRegName(Rd, sf, false);
+    dI += GetRegName(Rd, sf);
     dI += ", ";
 
     dI += GetRegName(Rn, sf);
@@ -55,15 +55,15 @@ std::string DecodeADD_SUB_IMM_Category2(uint32_t instruction)
     return dI;
 }
 
-std::string DecodeADD_SUB_IMM_TAG_Category2(uint32_t instruction)
+std::string DecodeADD_SUB_IMM_TAG_Category2(InstructionData instructionData)
 {
-    uint8_t sf = Bits(instruction, 31);         // 64/32 bit
-    uint8_t op = Bits(instruction, 30);         // SUMB,ADDG
-    uint8_t S = Bits(instruction, 29);          // flags?
-    uint8_t imm6 = Bits(instruction, 21, 16);   // immediate
-    uint8_t imm4 = Bits(instruction, 13, 10);   // immediate
-    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
-    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+    uint8_t sf = Bits(instructionData.instruction, 31);         // 64/32 bit
+    uint8_t op = Bits(instructionData.instruction, 30);         // SUMB,ADDG
+    uint8_t S = Bits(instructionData.instruction, 29);          // flags?
+    uint8_t imm6 = Bits(instructionData.instruction, 21, 16);   // immediate
+    uint8_t imm4 = Bits(instructionData.instruction, 13, 10);   // immediate
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);       // dest reg
 
     std::string dI;
 
@@ -82,15 +82,15 @@ std::string DecodeADD_SUB_IMM_TAG_Category2(uint32_t instruction)
     return dI;
 }
 
-std::string DecodeMIN_MAX_Category2(uint32_t instruction)
+std::string DecodeMIN_MAX_Category2(InstructionData instructionData)
 {
-    uint8_t sf = Bits(instruction, 31);         // 64/32 bit
-    uint8_t op = Bits(instruction, 30);         //
-    uint8_t S = Bits(instruction, 29);          // flags?
-    uint8_t opc = Bits(instruction, 21, 18);    // MIN/MAX
-    uint8_t imm8 = Bits(instruction, 17, 10);   // immediate
-    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
-    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+    uint8_t sf = Bits(instructionData.instruction, 31);         // 64/32 bit
+    uint8_t op = Bits(instructionData.instruction, 30);         //
+    uint8_t S = Bits(instructionData.instruction, 29);          // flags?
+    uint8_t opc = Bits(instructionData.instruction, 21, 18);    // MIN/MAX
+    uint8_t imm8 = Bits(instructionData.instruction, 17, 10);   // immediate
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);       // dest reg
 
     std::string dI;
 
@@ -114,15 +114,15 @@ std::string DecodeMIN_MAX_Category2(uint32_t instruction)
     return dI;
 }
 
-std::string DecodeLOGICAL_IMM_Category2(uint32_t instruction)
+std::string DecodeLOGICAL_IMM_Category2(InstructionData instructionData)
 {
-    uint8_t sf = Bits(instruction, 31);         // 64/32 bit
-    uint8_t opc = Bits(instruction, 30, 29);    // instruction type
-    uint8_t N = Bits(instruction, 22);          // flags?
-    uint8_t immr = Bits(instruction, 21, 16);   //immediate
-    uint8_t imms = Bits(instruction, 15, 10);   // immediate
-    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
-    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+    uint8_t sf = Bits(instructionData.instruction, 31);         // 64/32 bit
+    uint8_t opc = Bits(instructionData.instruction, 30, 29);    // instruction type
+    uint8_t N = Bits(instructionData.instruction, 22);          // flags?
+    uint8_t immr = Bits(instructionData.instruction, 21, 16);   //immediate
+    uint8_t imms = Bits(instructionData.instruction, 15, 10);   // immediate
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);       // dest reg
 
     std::string dI;
 
@@ -151,13 +151,13 @@ std::string DecodeLOGICAL_IMM_Category2(uint32_t instruction)
 }
 
 
-std::string DecodeMOVE_WIDE_IMM_Category2(uint32_t instruction)
+std::string DecodeMOVE_WIDE_IMM_Category2(InstructionData instructionData)
 {
-    uint8_t sf = Bits(instruction, 31);         // 64/32 bit
-    uint8_t opc = Bits(instruction, 30, 29);    // instruction type
-    uint8_t hw = Bits(instruction, 22, 21);     // shift
-    uint16_t imm16 = Bits(instruction, 20, 5);  // immediate
-    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+    uint8_t sf = Bits(instructionData.instruction, 31);         // 64/32 bit
+    uint8_t opc = Bits(instructionData.instruction, 30, 29);    // instruction type
+    uint8_t hw = Bits(instructionData.instruction, 22, 21);     // shift
+    uint16_t imm16 = Bits(instructionData.instruction, 20, 5);  // immediate
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);       // dest reg
 
     std::string dI;
 
@@ -182,15 +182,15 @@ std::string DecodeMOVE_WIDE_IMM_Category2(uint32_t instruction)
     }
     return dI;
 }
-std::string DecodeBITFIELD_Category2(uint32_t instruction)
+std::string DecodeBITFIELD_Category2(InstructionData instructionData)
 {
-    uint8_t sf = Bits(instruction, 31);         // 64/32 bit
-    uint8_t opc = Bits(instruction, 30, 29);    // instruction type
-    uint8_t N = Bits(instruction, 22);          //
-    uint16_t immr = Bits(instruction, 21, 16);  // immediate
-    uint16_t imms = Bits(instruction, 15, 10);  // immediate
-    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
-    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+    uint8_t sf = Bits(instructionData.instruction, 31);         // 64/32 bit
+    uint8_t opc = Bits(instructionData.instruction, 30, 29);    // instruction type
+    uint8_t N = Bits(instructionData.instruction, 22);          //
+    uint16_t immr = Bits(instructionData.instruction, 21, 16);  // immediate
+    uint16_t imms = Bits(instructionData.instruction, 15, 10);  // immediate
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);       // dest reg
 
     std::string dI;
 
@@ -215,15 +215,15 @@ std::string DecodeBITFIELD_Category2(uint32_t instruction)
     return dI;
 }
 
-std::string DecodeEXTRACT_Category2(uint32_t instruction)
+std::string DecodeEXTRACT_Category2(InstructionData instructionData)
 {
-    uint8_t sf = Bits(instruction, 31);         // 64/32 bit
-    uint8_t opc = Bits(instruction, 30, 29);    // instruction type
-    uint8_t N = Bits(instruction, 22);          //
-    uint16_t immr = Bits(instruction, 21, 16);  // immediate
-    uint16_t imms = Bits(instruction, 15, 10);  // immediate
-    uint8_t Rn = Bits(instruction, 9, 5);       // source reg
-    uint8_t Rd = Bits(instruction, 4, 0);       // dest reg
+    uint8_t sf = Bits(instructionData.instruction, 31);         // 64/32 bit
+    uint8_t opc = Bits(instructionData.instruction, 30, 29);    // instruction type
+    uint8_t N = Bits(instructionData.instruction, 22);          //
+    uint16_t immr = Bits(instructionData.instruction, 21, 16);  // immediate
+    uint16_t imms = Bits(instructionData.instruction, 15, 10);  // immediate
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);       // source reg
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);       // dest reg
 
     std::string dI = "EXTRACT";
 

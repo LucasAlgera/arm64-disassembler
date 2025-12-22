@@ -70,3 +70,11 @@ static std::string ToHexFormat(T value)
     return ss.str();
 }
 
+
+struct InstructionData
+{
+    uint32_t instruction;
+    uint64_t va;
+    uint32_t startVa;
+    uint32_t vaLength;
+};

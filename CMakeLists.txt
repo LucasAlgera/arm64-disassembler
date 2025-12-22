@@ -44,6 +44,8 @@ add_executable(arm64-disasm
 	include/decoders/decode_load_stores.h
 	src/decoders/decode_branches.cpp
 	include/decoders/decode_branches.h
+	src/label_inserter.cpp
+	include/label_inserter.h
 	)
 
 target_include_directories(arm64-disasm PRIVATE

@@ -11,26 +11,9 @@
 
 void PrintTest(const std::string& desc, uint32_t instruction)
 {
-    (DecodeGlobalCategory0(instruction) == InstructionCategory0::DATA_PROC_IMM);
 }
 
 void Disassembly()
 {
-    PrintTest("test", 0xD280001D);
+    PrintTest("test", 0x8B224820);
 }
-
-
-
-
-// DATA PROC IMM
-// TODO: 
-// EXTRACT
-
-// DONE: 
-// PC-REL
-// ADD/SUB
-// ADD/SUB (TAG)
-// MIN/MAX
-// LOGICAL
-// MOVE WIDE
-// BITFIELD

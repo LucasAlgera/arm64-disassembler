@@ -2,11 +2,11 @@
 #include <decode_util.h>
 #include <unordered_map>
 
-std::string DecodeLOAD_STORE_REG_IMM_Category2(uint32_t instruction, LOAD_STORES_Category1 cat)
+std::string DecodeLOAD_STORE_REG_IMM_Category2(InstructionData instructionData, LOAD_STORES_Category1 cat)
 {
-    uint8_t size = Bits(instruction, 31, 30);
-    uint8_t V = Bits(instruction, 26);
-    uint8_t opc = Bits(instruction, 23, 22);
+    uint8_t size = Bits(instructionData.instruction, 31, 30);
+    uint8_t V = Bits(instructionData.instruction, 26);
+    uint8_t opc = Bits(instructionData.instruction, 23, 22);
 
     uint16_t key = (size << 3) | (V << 2) | opc;
 
@@ -51,9 +51,9 @@ std::string DecodeLOAD_STORE_REG_IMM_Category2(uint32_t instruction, LOAD_STORES
 
     std::string dI = it->second;
 
-    uint32_t imm12 = Bits(instruction, 21, 10);
-    uint32_t Rn = Bits(instruction, 9, 5);
-    uint32_t Rt = Bits(instruction, 4, 0);
+    uint32_t imm12 = Bits(instructionData.instruction, 21, 10);
+    uint32_t Rn = Bits(instructionData.instruction, 9, 5);
+    uint32_t Rt = Bits(instructionData.instruction, 4, 0);
 
     // special case
     if (dI == "prfm")
@@ -85,11 +85,11 @@ std::string DecodeLOAD_STORE_REG_IMM_Category2(uint32_t instruction, LOAD_STORES
     return dI;
 }
 
-std::string DecodeLOAD_STORE_REG_PAIR_Category2(uint32_t instruction, LOAD_STORES_Category1 cat)
+std::string DecodeLOAD_STORE_REG_PAIR_Category2(InstructionData instructionData, LOAD_STORES_Category1 cat)
 {
-    uint8_t opc = Bits(instruction, 31, 30);
-    uint8_t V = Bits(instruction, 26);
-    uint8_t L = Bits(instruction, 22);
+    uint8_t opc = Bits(instructionData.instruction, 31, 30);
+    uint8_t V = Bits(instructionData.instruction, 26);
+    uint8_t L = Bits(instructionData.instruction, 22);
 
     uint16_t key = (opc << 2) | (V << 1) | L;
 
@@ -114,10 +114,10 @@ std::string DecodeLOAD_STORE_REG_PAIR_Category2(uint32_t instruction, LOAD_STORE
     if (it == table.end())
         return "UNALLOCATED";
 
-    int8_t imm7 = Bits(instruction, 21, 15);
-    uint8_t Rt2 = Bits(instruction, 14, 10);
-    uint8_t Rn = Bits(instruction, 9, 5);
-    uint8_t Rt = Bits(instruction, 4, 0);
+    int8_t imm7 = Bits(instructionData.instruction, 21, 15);
+    uint8_t Rt2 = Bits(instructionData.instruction, 14, 10);
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);
+    uint8_t Rt = Bits(instructionData.instruction, 4, 0);
 
     std::string dI = it->second;
 
@@ -167,10 +167,10 @@ std::string DecodeLOAD_STORE_REG_PAIR_Category2(uint32_t instruction, LOAD_STORE
             ", #" + ToHexFormat(offset) + "]";
     }
 }
-std::string DecodeLOAD_STORE_REG_Category2(uint32_t instruction)
+std::string DecodeLOAD_STORE_REG_Category2(InstructionData instructionData)
 {
-    uint8_t opc = Bits(instruction, 31, 30);
-    uint8_t VR = Bits(instruction, 26);
+    uint8_t opc = Bits(instructionData.instruction, 31, 30);
+    uint8_t VR = Bits(instructionData.instruction, 26);
 
     uint16_t key = (opc << 2) | VR;
 
@@ -192,8 +192,8 @@ std::string DecodeLOAD_STORE_REG_Category2(uint32_t instruction)
 
     std::string dI = it->second;
 
-    uint32_t imm19 = Bits(instruction, 23, 5);
-    uint8_t Rt = Bits(instruction, 4, 0);
+    uint32_t imm19 = Bits(instructionData.instruction, 23, 5);
+    uint8_t Rt = Bits(instructionData.instruction, 4, 0);
 
     if (!VR)
         dI += GetRegName(Rt, opc);

@@ -3,11 +3,11 @@
 #include "decode_util.h"
 #include <unordered_map>
 
-std::string DecodeDATA_PROC_2_Category2(uint32_t instruction)
+std::string DecodeDATA_PROC_2_Category2(InstructionData instructionData)
 {
-    bool sf = Bits(instruction, 31);
-    bool S = Bits(instruction, 29);
-    uint8_t opcode= Bits(instruction, 15,10);
+    bool sf = Bits(instructionData.instruction, 31);
+    bool S = Bits(instructionData.instruction, 29);
+    uint8_t opcode= Bits(instructionData.instruction, 15,10);
 
 
     uint8_t key = (sf << 8) | (sf << 7) | opcode;
@@ -59,9 +59,9 @@ std::string DecodeDATA_PROC_2_Category2(uint32_t instruction)
     std::string dI{};
     dI = it->second;
 
-    uint8_t Rm = Bits(instruction, 20, 16);
-    uint8_t Rn = Bits(instruction, 9, 5);
-    uint8_t Rd = Bits(instruction, 4, 0);
+    uint8_t Rm = Bits(instructionData.instruction, 20, 16);
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);
 
     dI += GetRegName(Rd, sf);
     dI += ", ";
@@ -72,12 +72,12 @@ std::string DecodeDATA_PROC_2_Category2(uint32_t instruction)
 	return dI;
 }
 
-std::string DecodeDATA_PROC_1_Category2(uint32_t instruction)
+std::string DecodeDATA_PROC_1_Category2(InstructionData instructionData)
 {
-    bool sf = Bits(instruction, 31);
-    bool S = Bits(instruction, 29);
-    uint8_t opcode2 = Bits(instruction, 20, 16);
-    uint8_t opcode = Bits(instruction, 15, 10);
+    bool sf = Bits(instructionData.instruction, 31);
+    bool S = Bits(instructionData.instruction, 29);
+    uint8_t opcode2 = Bits(instructionData.instruction, 20, 16);
+    uint8_t opcode = Bits(instructionData.instruction, 15, 10);
 
 
     uint16_t key = (sf << 14) | (S << 13) | (opcode2 << 12) | opcode;
@@ -112,8 +112,8 @@ std::string DecodeDATA_PROC_1_Category2(uint32_t instruction)
     std::string dI{};
     dI = it->second;
 
-    uint8_t Rn = Bits(instruction, 9, 5);
-    uint8_t Rd = Bits(instruction, 4, 0);
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);
 
     dI += GetRegName(Rd, sf);
     dI += ", ";
@@ -124,11 +124,11 @@ std::string DecodeDATA_PROC_1_Category2(uint32_t instruction)
 
 
 
-std::string DecodeLOG_SHIFT_Category2(uint32_t instruction)
+std::string DecodeLOG_SHIFT_Category2(InstructionData instructionData)
 {
-	bool sf = Bits(instruction, 31);
-	uint8_t opc = Bits(instruction, 30,29);
-	bool N = Bits(instruction, 21);
+	bool sf = Bits(instructionData.instruction, 31);
+	uint8_t opc = Bits(instructionData.instruction, 30,29);
+	bool N = Bits(instructionData.instruction, 21);
 
 	uint8_t key = (sf << 3) | (sf << 1) | N;
 
@@ -157,11 +157,11 @@ std::string DecodeLOG_SHIFT_Category2(uint32_t instruction)
         return "UNALLOCATED";
 
 
-    uint8_t shift = Bits(instruction, 23, 22);
-    uint8_t Rm = Bits(instruction, 20, 16);
-    uint8_t imm6 = Bits(instruction, 15, 10);
-    uint8_t Rn = Bits(instruction, 9, 5);
-    uint8_t Rd = Bits(instruction, 4, 0);
+    uint8_t shift = Bits(instructionData.instruction, 23, 22);
+    uint8_t Rm = Bits(instructionData.instruction, 20, 16);
+    uint8_t imm6 = Bits(instructionData.instruction, 15, 10);
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);
 
     std::string dI{};
     dI = it->second;
@@ -188,11 +188,11 @@ std::string DecodeLOG_SHIFT_Category2(uint32_t instruction)
     return dI;
 }
 
-std::string DecodeADD_SUB_SHIFT_REG_Category2(uint32_t instruction)
+std::string DecodeADD_SUB_SHIFT_REG_Category2(InstructionData instructionData)
 {
-    bool sf = Bits(instruction, 31);
-    bool op = Bits(instruction, 30);
-    bool N = Bits(instruction, 29);
+    bool sf = Bits(instructionData.instruction, 31);
+    bool op = Bits(instructionData.instruction, 30);
+    bool N = Bits(instructionData.instruction, 29);
 
 
     uint8_t key = (op << 1) | N;
@@ -211,11 +211,11 @@ std::string DecodeADD_SUB_SHIFT_REG_Category2(uint32_t instruction)
     std::string dI{};
     dI = it->second;
 
-    uint8_t shift = Bits(instruction, 23, 22);
-    uint8_t Rm = Bits(instruction, 20, 16);
-    uint8_t imm6 = Bits(instruction, 15, 10);
-    uint8_t Rn = Bits(instruction, 9, 5);
-    uint8_t Rd = Bits(instruction, 4, 0);
+    uint8_t shift = Bits(instructionData.instruction, 23, 22);
+    uint8_t Rm = Bits(instructionData.instruction, 20, 16);
+    uint8_t imm6 = Bits(instructionData.instruction, 15, 10);
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);
 
     dI += GetRegName(Rd, sf, false);
     dI += ", ";
@@ -236,11 +236,11 @@ std::string DecodeADD_SUB_SHIFT_REG_Category2(uint32_t instruction)
     return dI;
 }
 
-std::string DecodeADD_SUB_EXT_REG_Category2(uint32_t instruction)
+std::string DecodeADD_SUB_EXT_REG_Category2(InstructionData instructionData)
 {
-    bool sf = Bits(instruction, 31);
-    bool op = Bits(instruction, 30);
-    bool N = Bits(instruction, 29);
+    bool sf = Bits(instructionData.instruction, 31);
+    bool op = Bits(instructionData.instruction, 30);
+    bool N = Bits(instructionData.instruction, 29);
 
 
     uint8_t key = (op << 1) | N;
@@ -259,12 +259,12 @@ std::string DecodeADD_SUB_EXT_REG_Category2(uint32_t instruction)
     std::string dI{};
     dI = it->second;
 
-    uint8_t Rm = Bits(instruction, 20, 16);
-    bool optionw = Bits(instruction, 15);
-    uint8_t option = Bits(instruction, 14, 13);
-    uint8_t imm3 = Bits(instruction, 12, 10);
-    uint8_t Rn = Bits(instruction, 9, 5);
-    uint8_t Rd = Bits(instruction, 4, 0);
+    uint8_t Rm = Bits(instructionData.instruction, 20, 16);
+    bool optionw = Bits(instructionData.instruction, 15);
+    uint8_t option = Bits(instructionData.instruction, 14, 13);
+    uint8_t imm3 = Bits(instructionData.instruction, 12, 10);
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);
+    uint8_t Rd = Bits(instructionData.instruction, 4, 0);
 
     dI += GetRegName(Rd, sf, false);
     dI += ", ";
@@ -286,7 +286,7 @@ std::string DecodeADD_SUB_EXT_REG_Category2(uint32_t instruction)
     return dI;
 }
 
-std::string DecodeDATA_PROC_3_Category2(uint32_t instruction)
+std::string DecodeDATA_PROC_3_Category2(InstructionData instructionData)
 {
     return std::string("DATA PROC 3 instruction");
 }

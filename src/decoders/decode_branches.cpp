@@ -2,11 +2,11 @@
 #include "decode_util.h"
 #include <unordered_map>
 
-std::string DecodeCONDITIONAL_B_Category2(uint32_t instruction)
+std::string DecodeCONDITIONAL_B_Category2(InstructionData instructionData)
 {
-	uint32_t imm19 = Bits(instruction, 23, 5);
-	bool o0 = Bits(instruction, 4);
-	uint8_t cond = Bits(instruction, 3, 0);
+	uint32_t imm19 = Bits(instructionData.instruction, 23, 5);
+	bool o0 = Bits(instructionData.instruction, 4);
+	uint8_t cond = Bits(instructionData.instruction, 3, 0);
 	
 	std::string dI{};
 	dI = o0 ? "BC." : "B.";
@@ -37,14 +37,18 @@ std::string DecodeCONDITIONAL_B_Category2(uint32_t instruction)
 
     dI += it->second;
 
-    dI += ToHexFormat(SignExtend(imm19 << 2, 21, 64));
+    uint64_t bAdress = instructionData.va + SignExtend(static_cast<uint64_t>(imm19 << 2), 21, 64);
+    if (bAdress < instructionData.startVa || bAdress > instructionData.startVa + instructionData.vaLength)
+        dI += "<_EXTERNAL>";
+    else
+        dI += ToHexFormat(instructionData.va + SignExtend(imm19 << 2, 21, 64));
 	return dI;
 }
 
-std::string DecodeHINTS_Category2(uint32_t instruction)
+std::string DecodeHINTS_Category2(InstructionData instructionData)
 {
-    uint8_t CRm = Bits(instruction, 11, 8);
-    uint8_t op2 = Bits(instruction, 7, 5);
+    uint8_t CRm = Bits(instructionData.instruction, 11, 8);
+    uint8_t op2 = Bits(instructionData.instruction, 7, 5);
     
     uint8_t key = (CRm << 7) | op2;
 
@@ -75,14 +79,14 @@ std::string DecodeHINTS_Category2(uint32_t instruction)
     return dI;
 }
 
-std::string DecodeSYS_INSTR_Category2(uint32_t instruction)
+std::string DecodeSYS_INSTR_Category2(InstructionData instructionData)
 {
-    bool L = Bits(instruction, 21);
-    uint8_t op1 = Bits(instruction, 18,16);
-    uint8_t CRn = Bits(instruction, 15,12);
-    uint8_t CRm = Bits(instruction, 11,8);
-    uint8_t op2 = Bits(instruction, 7, 5);
-    uint8_t Rt = Bits(instruction,  4, 0);
+    bool L = Bits(instructionData.instruction, 21);
+    uint8_t op1 = Bits(instructionData.instruction, 18,16);
+    uint8_t CRn = Bits(instructionData.instruction, 15,12);
+    uint8_t CRm = Bits(instructionData.instruction, 11,8);
+    uint8_t op2 = Bits(instructionData.instruction, 7, 5);
+    uint8_t Rt = Bits(instructionData.instruction,  4, 0);
 
     std::string dI{};
     dI = L ? "SYSL " : "SYS ";
@@ -95,13 +99,13 @@ std::string DecodeSYS_INSTR_Category2(uint32_t instruction)
     return dI;
 }
 
-std::string DecodeUNCONDITIONAL_B_R_Category2(uint32_t instruction)
+std::string DecodeUNCONDITIONAL_B_R_Category2(InstructionData instructionData )
 {
-    uint8_t opc = Bits(instruction, 24, 21);
-    uint8_t op2 = Bits(instruction, 20, 16);
-    uint8_t op3 = Bits(instruction, 15, 10);
-    uint8_t Rn = Bits(instruction, 9, 5);
-    uint8_t op4 = Bits(instruction, 4,0);
+    uint8_t opc = Bits(instructionData.instruction, 24, 21);
+    uint8_t op2 = Bits(instructionData.instruction, 20, 16);
+    uint8_t op3 = Bits(instructionData.instruction, 15, 10);
+    uint8_t Rn = Bits(instructionData.instruction, 9, 5);
+    uint8_t op4 = Bits(instructionData.instruction, 4,0);
 
     uint32_t key{};
     static std::unordered_map<uint32_t, std::string> table{};
@@ -135,30 +139,40 @@ std::string DecodeUNCONDITIONAL_B_R_Category2(uint32_t instruction)
     return dI; 
 }
 
-std::string DecodeUNCONDITIONAL_B_I_Category2(uint32_t instruction)
+std::string DecodeUNCONDITIONAL_B_I_Category2(InstructionData instructionData)
 {
-    bool op = Bits(instruction, 31);
-    uint32_t imm26 = Bits(instruction, 25, 0);
+    bool op = Bits(instructionData.instruction, 31);
+    uint32_t imm26 = Bits(instructionData.instruction, 25, 0);
 
     std::string dI; 
     dI += op ? "bl " : "b ";
-    dI += ToHexFormat(SignExtend(static_cast<uint64_t>(imm26) << 2, 28, 64));
+
+    uint64_t bAdress = instructionData.va + SignExtend(static_cast<uint64_t>(imm26) << 2, 28, 64);
+    if (bAdress < instructionData.startVa || bAdress > instructionData.startVa + instructionData.vaLength)
+        dI += "<_EXTERNAL>";
+    else
+        dI += ToHexFormat(bAdress);
 
     return dI;
 }
-std::string DecodeCOMP_BRANCH_Category2(uint32_t instruction)
+std::string DecodeCOMP_BRANCH_Category2(InstructionData instructionData)
 {
-    bool sf = Bits(instruction, 31);
-    bool op = Bits(instruction, 24);
-    uint32_t imm19 = Bits(instruction, 23,5);
-    uint32_t Rt = Bits(instruction, 4,0);
+    bool sf = Bits(instructionData.instruction, 31);
+    bool op = Bits(instructionData.instruction, 24);
+    uint32_t imm19 = Bits(instructionData.instruction, 23,5);
+    uint32_t Rt = Bits(instructionData.instruction, 4,0);
 
     std::string dI{};
 
     dI = op ? "cbnz " : "cbz ";
     dI += GetRegName(Rt, sf);
     dI += ", ";
-    dI += ToHexFormat(SignExtend(static_cast<uint16_t>(imm19 << 2), 21, 64));
+    
+    uint64_t bAdress = instructionData.va + SignExtend(static_cast<uint64_t>(imm19 << 2), 21, 64);
+    if (bAdress < instructionData.startVa || bAdress > instructionData.startVa + instructionData.vaLength)
+        dI += "<_EXTERNAL>";
+    else
+        dI += ToHexFormat(bAdress);
 
     return dI;
 }
